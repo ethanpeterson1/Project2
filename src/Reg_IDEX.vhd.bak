@@ -3,7 +3,7 @@ use IEEE.std_logic_1164.all;
 
 
 entity Reg_IDEX is
-generic(N : integer := 184);
+generic(N : integer := 183);
   port(	i_CLKn        	: in std_logic;     -- Clock input
        	i_RSTn        	: in std_logic;     -- Reset input
        	i_WEn         	: in std_logic;     -- Write enable input
@@ -61,7 +61,7 @@ generic(N : integer := 184);
 end Reg_IDEX;
 
 architecture structural of Reg_IDEX is
-component register_184 is
+component register_179 is
 port(i_CLKn        : in std_logic;     -- Clock input
        i_RSTn        : in std_logic;     -- Reset input
        i_WEn         : in std_logic;     -- Write enable input

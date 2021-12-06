@@ -333,13 +333,6 @@ begin
 --IF
 ---------------------------------------------------------------------------
 
-  JrMux : mux2t1_N
-	generic map(N => N)
-	port map(i_S => s_jr,
-		 i_D0 => s_IFIDOut,
-		 i_D1 => s_rsOut,
-		 o_O => s_JRmuxOut32
-	);
 
   g_PC: PCReg
     port MAP( --PC 0x00400000, special register 
@@ -481,8 +474,22 @@ begin
 		 rst => iRST,
 		 rs_out => s_rsOut,
 		 rt_out => s_rtOut);
-
-
+  g_RegIDEX : Reg_IDEX
+	generic map(N : integer := 211)
+	port map(i_CLKn => iCLK,
+		 i_RSTn => iRST,
+		 i_WEn => 1,
+		 i_RS_RegOut => s_rsOut,
+		 i_RT_RegOut => s_rtOut,
+		 i_SignExtendOut => s_signExtended, 
+	);
+    JrMux : mux2t1_N
+	generic map(N => N)
+	port map(i_S => s_jr,
+		 i_D0 => s_IFIDOut,
+		 i_D1 => s_rsOut,
+		 o_O => s_JRmuxOut32
+	);
 
 --EX
 ---------------------------------------------------------------------------
