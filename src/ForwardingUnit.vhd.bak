@@ -25,9 +25,6 @@ begin
 		ForwardA = "01";
 	elsif MEM/WBRegWrite = '1' and MEM/WBRD /= "00000" and MEM/WBRD = ID/EXRT and not(EX/MEMRegWrite = '1' and EX/MEMRD /= "00000" and EX/MEMRD /= ID/EXRT)then
 		ForwardB = "01";
-	else 
-		ForwardA = "00";
-		ForwardB = "00";
 	end if;
 	end process;
 end behavior;
