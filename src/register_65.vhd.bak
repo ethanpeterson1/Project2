@@ -18,7 +18,7 @@
 library IEEE;
 use IEEE.std_logic_1164.all;
 
-entity register_64 is --WILL BE CHANGED TO 65 FOR HARDWARE SCHEDULED PIPELINE
+entity register_64 is
   generic(N : integer := 64); -- Generic of type integer for input/output data width. Default value is 32.
   port(i_CLKn        : in std_logic;     -- Clock input
        i_RSTn        : in std_logic;     -- Reset input

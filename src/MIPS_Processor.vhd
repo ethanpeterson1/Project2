@@ -190,6 +190,82 @@ architecture structure of MIPS_Processor is
              o_Q          : out std_logic_vector(31 downto 0)
 	);
 end component;
+   component Reg_IDEX is
+	generic(N : integer := 211);
+	port(i_CLKn        	: in std_logic;     -- Clock input
+       	i_RSTn        	: in std_logic;     -- Reset input
+       	i_WEn         	: in std_logic;     -- Write enable input
+
+
+	i_ALUOut	: in std_logic_vector(31 downto 0);
+	i_Forward_ALUOut: in std_logic_vector(31 downto 0);
+	i_OutMux	: in std_logic_vector(31 downto 0);
+	i_RSOut		: in std_logic_vector(31 downto 0);
+	i_IFID_Out	: in std_logic_vector(31 downto 0);
+	i_WriteRegAdd	: in std_logic_vector(4 downto 0);
+	i_jrControl	: in std_logic;
+	i_MemWrite	: in std_logic;
+	i_Branch	: in std_logic;
+	i_MemToReg	: in std_logic;
+	i_RegWrite	: in std_logic;
+
+	o_ALUOut	: out std_logic_vector(31 downto 0);
+	o_Forward_ALUOut: out std_logic_vector(31 downto 0);
+	o_OutMux	: out std_logic_vector(31 downto 0);
+	o_RSOut		: out std_logic_vector(31 downto 0);
+	o_IFID_Out	: out std_logic_vector(31 downto 0);
+	o_WriteRegAdd	: out std_logic_vector(4 downto 0);
+	o_jrControl	: out std_logic;
+   	o_MemWrite    	: out std_logic;
+    	o_Branch    	: out std_logic;
+    	o_MemToReg    	: out std_logic;
+    	o_RegWrite    	: out std_logic
+	);
+end component;
+    component Reg_IFID is
+	generic(N : integer := 64);
+	port(i_CLKn        	: in std_logic;     -- Clock input
+       	i_RSTn        	: in std_logic;     -- Reset input
+       	i_WEn         	: in std_logic;     -- Write enable input
+       	i_Instruction 	: in std_logic_vector(31 downto 0);    
+	i_PC		: in std_logic_vector(31 downto 0);
+	i_Flush		: in std_logic;
+	o_Instruction 	: out std_logic_vector(31 downto 0);    
+	o_PC		: out std_logic_vector(31 downto 0);
+	--o_Flush		: out std_logic WILL BE IMPLEMENTED FOR HARDWARE SCHEDULE PIPELINE
+	);
+end component;
+    component Reg_MEMWB is
+	generic(N : integer := 170);
+	port(i_CLKn        	: in std_logic;     -- Clock input
+       	i_RSTn        	: in std_logic;     -- Reset input
+       	i_WEn         	: in std_logic;     -- Write enable input
+
+
+	i_ALUOut	: in std_logic_vector(31 downto 0);
+	i_Forward_ALUOut: in std_logic_vector(31 downto 0);
+	i_OutMux	: in std_logic_vector(31 downto 0);
+	i_RSOut		: in std_logic_vector(31 downto 0);
+	i_IFID_Out	: in std_logic_vector(31 downto 0);
+	i_WriteRegAdd	: in std_logic_vector(4 downto 0);
+	i_jrControl	: in std_logic;
+	i_MemWrite	: in std_logic;
+	i_Branch	: in std_logic;
+	i_MemToReg	: in std_logic;
+	i_RegWrite	: in std_logic;
+
+	o_ALUOut	: out std_logic_vector(31 downto 0);
+	o_Forward_ALUOut: out std_logic_vector(31 downto 0);
+	o_OutMux	: out std_logic_vector(31 downto 0);
+	o_RSOut		: out std_logic_vector(31 downto 0);
+	o_IFID_Out	: out std_logic_vector(31 downto 0);
+	o_WriteRegAdd	: out std_logic_vector(4 downto 0);
+	o_jrControl	: out std_logic;
+   	o_MemWrite    	: out std_logic;
+    	o_Branch    	: out std_logic;
+    	o_MemToReg    	: out std_logic;
+    	o_RegWrite    	: out std_logic
+	);
 
   -- TODO: You may add any additional signals or components your implementation 
   --       requires below this comment
@@ -219,6 +295,9 @@ end component;
 	signal s_InstrMux1Out : std_logic_vector(4 downto 0);
 	signal s_luiInst : std_logic;
 	signal s_luiMuxOut : std_logic_vector(31 downto 0);
+	signal s_PCAdderOut : std_logic_vector(31 downto 0);
+	signal s_IFIDInst : std_logic_vector(31 downto 0);
+	signal s_IFIDPC : std_logic_vector(31 downto 0);
 
 begin
 
@@ -275,9 +354,19 @@ begin
 	i_Ain		=> s_NextInstAddr,
 	i_Bin      	=> x"00000004",	--s_AdderBinSrc
 	i_Cin		=> '0',
-	o_Cout		=> ,
-        o_R            	=> );
-
+	o_Cout		=> s_toNothing,
+        o_R            	=> s_PCAdderOut);
+   g_RegIFID: RegIFID
+	port MAP(i_CLKn => iCLK,
+		 i_RSTn => iRST,
+		 i_WEn  => '1',
+		 i_Instruction => s_Inst,
+		 i_PC => s_PCAdderOut,
+		 --i_Flush => ,
+		 o_Instruction => s_IFIDInst,
+		 o_PC => s_IFIDPC
+		 --o_Flush => ,
+	);
 
 
 
