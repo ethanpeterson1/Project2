@@ -3,7 +3,7 @@ use IEEE.std_logic_1164.all;
 
 
 entity Reg_MEMWB is
-generic(N : integer := 137);
+generic(N : integer := 170);
   port(	i_CLKn        	: in std_logic;     -- Clock input
        	i_RSTn        	: in std_logic;     -- Reset input
        	i_WEn         	: in std_logic;     -- Write enable input
@@ -32,29 +32,31 @@ generic(N : integer := 137);
 end Reg_MEMWB;
 
 architecture structural of Reg_MEMWB is
-component register_137 is
+component register_170 is
 port(i_CLKn        : in std_logic;     -- Clock input
        i_RSTn        : in std_logic;     -- Reset input
        i_WEn         : in std_logic;     -- Write enable input
-       i_Dn          : in std_logic_vector(136 downto 0);     -- Data value input
-       o_Qn          : out std_logic_vector(136 downto 0));   -- Data value output
+       i_Dn          : in std_logic_vector(169 downto 0);     -- Data value input
+       o_Qn          : out std_logic_vector(169 downto 0));   -- Data value output
 end component;
 
-signal S_Reg_Inputs: std_logic_vector(136 downto 0);
-signal S_Reg_Outputs: std_logic_vector(136 downto 0);
+signal S_Reg_Inputs: std_logic_vector(169 downto 0);
+signal S_Reg_Outputs: std_logic_vector(169 downto 0);
 
 begin
-S_Reg_Inputs <= i_JalControl &
-		i_LuiControl &
-		i_RegWrite & 
+S_Reg_Inputs <= i_RegWrite & 
 		i_MemToReg & 
+		i_Branch &
+		i_MemWrite &
+		i_jrControl &
 		i_WriteRegAdd &
-		i_Inst &
-		i_UpdatedPC &
-		i_DMEM &
+		i_IFID_Out &
+		i_RSOut &
+		i_OutMux &
+		i_Forward_ALUOut &
 		i_ALUOut;
 		
-REG: register_137 port map(
+REG: register_170 port map(
 	i_CLKn => i_CLKn, 
        	i_RSTn => i_RSTn,
        	i_WEn  => i_WEn,
@@ -62,14 +64,16 @@ REG: register_137 port map(
        	o_Qn   => S_Reg_Outputs);
 
 o_ALUOut <= S_Reg_Outputs(31 downto 0);
-o_DMEM <= S_Reg_Outputs(63 downto 32);
-o_UpdatedPC <= S_Reg_Outputs(95 downto 64);
-o_Inst <= S_Reg_Outputs(127 downto 96);
-o_WriteRegAdd <= S_Reg_Outputs(132 downto 128);
-o_MemToReg <= S_Reg_Outputs(133);
-o_RegWrite <= S_Reg_Outputs(134);
-o_LuiControl <= S_RegOutputs(135);
-o_JalControl <= S_RegOutputs(136);
+o_Forward_ALUOut <= S_Reg_Outputs(63 downto 32);
+o_OutMux <= S_Reg_Outputs(95 downto 64);
+o_RSOut <= S_Reg_Outputs(127 downto 96);
+o_IFID_Out <= S_Reg_Outputs(159 downto 128);
+o_WriteRegAdd <= S_Reg_Outputs(164 downto 160);
+o_jrControl <= S_Reg_Outputs(165);
+o_MemWrite <= S_Reg_Outputs(166);
+o_Branch <= S_Reg_Outputs(167);
+o_MemToReg <= S_Reg_Outputs(168);
+o_RegWrite <= S_Reg_Outputs(169);
 
 
 end structural;

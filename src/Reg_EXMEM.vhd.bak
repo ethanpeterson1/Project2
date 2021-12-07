@@ -3,7 +3,7 @@ use IEEE.std_logic_1164.all;
 
 
 entity Reg_EXMEM is
-generic(N : integer := 138);
+generic(N : integer := 106);
   port(	i_CLKn        	: in std_logic;     -- Clock input
        	i_RSTn        	: in std_logic;     -- Reset input
        	i_WEn         	: in std_logic;     -- Write enable input
@@ -18,38 +18,35 @@ generic(N : integer := 138);
         i_LuiControl	: in std_logic;
 	i_MemWr		: in std_logic;
 	i_WriteRegAdd	: in std_logic_vector(4 downto 0);
-	i_UpdatedPC	: in std_logic_vector(31 downto 0);
 
 	
-	o_ALUOut	: out std_logic_vector(31 downto 0);
-	o_Inst          : out std_logic_vector(31 downto 0);
-	o_RtRegOut	: out std_logic_vector(31 downto 0);
-	o_MemToReg	: out std_logic;
-	o_RegWr		: out std_logic;
-	o_JalControl	: out std_logic;
-        o_LuiControl	: out std_logic;
-	o_MemWr		: out std_logic;
-	o_WriteRegAdd	: out std_logic_vector(4 downto 0)
-	o_UpdatedPC	: out std_logic_vector(31 downto 0));
+	o_ALUOut	: in std_logic_vector(31 downto 0);
+	o_Inst          : in std_logic_vector(31 downto 0);
+	o_RtRegOut	: in std_logic_vector(31 downto 0);
+	o_MemToReg	: in std_logic;
+	o_RegWr		: in std_logic;
+	o_JalControl	: in std_logic;
+        o_LuiControl	: in std_logic;
+	o_MemWr		: in std_logic;
+	o_WriteRegAdd	: in std_logic_vector(4 downto 0));
 	
 
 end Reg_EXMEM;
 
 architecture structural of Reg_EXMEM is
-component register_138 is
+component register_106 is
 port(i_CLKn        : in std_logic;     -- Clock input
        i_RSTn        : in std_logic;     -- Reset input
        i_WEn         : in std_logic;     -- Write enable input
-       i_Dn          : in std_logic_vector(137 downto 0);     -- Data value input
-       o_Qn          : out std_logic_vector(137 downto 0));   -- Data value output
+       i_Dn          : in std_logic_vector(105 downto 0);     -- Data value input
+       o_Qn          : out std_logic_vector(105 downto 0));   -- Data value output
 end component;
 
-signal S_Reg_Inputs: std_logic_vector(137 downto 0);
-signal S_Reg_Outputs: std_logic_vector(137 downto 0);
+signal S_Reg_Inputs: std_logic_vector(105 downto 0);
+signal S_Reg_Outputs: std_logic_vector(105 downto 0);
 
 begin
-S_Reg_Inputs <= i_UpdatedPC &
-		i_WriteRegAdd &
+S_Reg_Inputs <= i_WriteRegAdd &
 		i_MemWr
 		i_LuiControl & 
 		i_JalControl & 
@@ -59,7 +56,7 @@ S_Reg_Inputs <= i_UpdatedPC &
 		i_Inst &
 		i_ALUOut;
 		
-REG: register_138 port map(
+REG: register_106 port map(
 	i_CLKn => i_CLKn, 
        	i_RSTn => i_RSTn,
        	i_WEn  => i_WEn,
@@ -76,7 +73,7 @@ o_JalControl <= S_RegOutputs(98);
 o_LuiControl <= S_RegOutputs(99);
 o_MemWr <= S_RegOutputs(100);
 o_WriteRegAdd <= S_RegOutputs(105 downto 101);
-o_UpdatedPC <= S_RegOutputs(137 downto 106);
+
 
 
 end structural;

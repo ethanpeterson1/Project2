@@ -3,7 +3,7 @@ use IEEE.std_logic_1164.all;
 
 
 entity Reg_IDEX is
-generic(N : integer := 185);
+generic(N : integer := 186);
   port(	i_CLKn        	: in std_logic;     -- Clock input
        	i_RSTn        	: in std_logic;     -- Reset input
        	i_WEn         	: in std_logic;     -- Write enable input
@@ -32,6 +32,7 @@ generic(N : integer := 185);
 	--i_BranchSelect 	: in std_logic;
 	i_JalControl	: in std_logic;
 	i_shamt		: in std_logic_vector(4 downto 0);
+	i_LuiInst       : in std_logic;
 
 
 	o_RS_RegOut    	: out std_logic_vector(31 downto 0);
@@ -57,23 +58,24 @@ generic(N : integer := 185);
     	--o_BranchSelect  : out std_logic;
     	o_JalControl    : out std_logic;
 	o_shamt		: out std_logic_vector(4 downto 0));
-
+	o_LuiInst	: out std_logic;
 end Reg_IDEX;
 
 architecture structural of Reg_IDEX is
-component register_185 is
+component register_186 is
 port(i_CLKn        : in std_logic;     -- Clock input
        i_RSTn        : in std_logic;     -- Reset input
        i_WEn         : in std_logic;     -- Write enable input
-       i_Dn          : in std_logic_vector(184 downto 0);     -- Data value input
-       o_Qn          : out std_logic_vector(184 downto 0));   -- Data value output
+       i_Dn          : in std_logic_vector(185 downto 0);     -- Data value input
+       o_Qn          : out std_logic_vector(185 downto 0));   -- Data value output
 end component;
 
-signal S_Reg_Inputs: std_logic_vector(184 downto 0);
-signal S_Reg_Outputs: std_logic_vector(184 downto 0);
+signal S_Reg_Inputs: std_logic_vector(185 downto 0);
+signal S_Reg_Outputs: std_logic_vector(185 downto 0);
 
 begin
 S_Reg_Inputs <= 
+i_LuiInst &
 i_shamt &
 i_JalControl &
 i_RegWrite &
@@ -91,7 +93,7 @@ i_RT_RegOut &
 i_RS_RegOut;
 
 
-REG: register_185 port map(
+REG: register_186 port map(
 	i_CLKn => i_CLKn, 
        	i_RSTn => i_RSTn,
        	i_WEn  => i_WEn,
@@ -121,6 +123,7 @@ o_RegWrite <= S_Reg_Outputs(178);
 --o_BranchSelect <= S_Reg_Outputs(172);
 o_JalControl  <= S_Reg_Outputs(179);
 o_shamt	<= S_Reg_Outputs(184 downto 180);
+o_LuiInst <= S_Reg_Outputs(185);
 
 
 end structural;

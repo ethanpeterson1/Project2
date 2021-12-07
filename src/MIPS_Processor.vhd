@@ -293,21 +293,26 @@ end component;
 	signal s_memToRegOut : std_logic_vector(31 downto 0);
 	signal s_JRmuxOut32 : std_logic_vector(31 downto 0);
 	signal s_InstrMux1Out : std_logic_vector(4 downto 0);
-	signal s_luiInst : std_logic;
 	signal s_luiMuxOut : std_logic_vector(31 downto 0);
 	signal s_PCAdderOut : std_logic_vector(31 downto 0);
 	signal s_IFIDInst : std_logic_vector(31 downto 0);
 	signal s_IFIDPC : std_logic_vector(31 downto 0);
 	signal s_BranchPC : std_logic_vector(31 downto 0);
 	signal s_shiftedL2Out : std_logic_vector(31 downto 0);
+	signal IFIDluiInst : std_logic;
 	signal s_memWrite : std_logic;
 	signal s_regWrite : std_logic;
-	signal IDEX_RS_RegOut : std_logic_vector(31 downto 0);
-	signal IDEX_RT_RegOut : std_logic_vector(31 downto 0);
-	signal IDEX_SignExtend : std_logic_vector(31 downto 0);
-	signal IDEX_UpdatedPC : std_logic_vector(31 downto 0);
-	signal IDEXInst : std_logic_vector(31 downto 0);
-	signal IDEXrsAdd : std_logic_vector(4 downto 0);
+	signal IDEX_RS_RegOut,IDEX_RT_RegOut,IDEX_SignExtend,IDEX_UpdatedPC,IDEXInst : std_logic_vector(31 downto 0);
+	signal IDEXrsAdd,IDEXrtAdd,IDEXshamt : std_logic_vector(4 downto 0);
+	signal IDEXALUControlOut : std_logic_vector(3 downto 0);
+	signal IDEXALUSrc,IDEXRegDst,IDEXMemWrite,IDEXMemToReg,IDEXRegWrite,IDEXJalControl,IDEXluiInst : std_logic;
+	signal EXMEMRegWrAdd : std_logic_vector(4 downto 0);
+	signal EXMEMALUOut,EXMEMInst,EXMEMRtRegOut,EXMEMUpdatedPC : std_logic_vector(31 downto 0);
+	signal EXMEMMemToReg,EXMEMRegWr,EXMEMJalControl,EXMEMLuiControl,EXMEMMemWr : std_logic;
+	signal EXMEMWriteRegAdd : std_logic_vector(4 downto 0);
+	signal WBALUOut,WBDMEM,WBUpdatedPC,WBInst : std_logic_vector(31 downto 0);
+	signal WBWriteRegAdd : std_logic_vector(4 downto 0);
+	signal WBMemToReg,WBRegWrite,WBLuiControl,WBJalControl : std_logic;
 begin
 
   -- TODO: This is required to be your final input to your instruction memory. This provides a feasible method to externally load the memory module which means that the synthesis tool must assume it knows nothing about the values stored in the instruction memory. If this is not included, much, if not all of the design is optimized out because the synthesis tool will believe the memory to be all zeros.
@@ -361,7 +366,7 @@ begin
    g_RegIFID: RegIFID
 	port MAP(i_CLKn => iCLK,
 		 i_RSTn => iRST,
-		 i_WEn  => '1',
+		 i_WEn  => iCLK,
 		 i_Instruction => s_Inst,
 		 i_PC => s_PCAdderOut,
 		 --i_Flush => ,
@@ -390,7 +395,7 @@ begin
 		 jal => s_jal,
 		 ALUOP => s_ALUOP,
 		 i_CLK => iCLK,
-		 luiInst => s_luiInst,
+		 luiInst => IFIDluiInst,
 		 ImmType => s_ImmType);
 
   ALUcont : ALUcontrol
@@ -443,7 +448,7 @@ begin
 	generic map (N => 5)
 	port map(i_S => s_regdst,
 		 i_D0 => s_IFIDInst(20 downto 16),
-		 i_D1 => s_IFIDInst(15 downto 11),
+		 i_D1 => s_IFIDInst(15 dos_DMemOutwnto 11),
 		 o_O => s_InstrMux1Out);
    InstrMux2 : mux2t1_5
 	generic map (N => 5)
@@ -471,10 +476,10 @@ begin
 		 rs_out => s_rsOut,
 		 rt_out => s_rtOut);
   g_RegIDEX : Reg_IDEX
-	generic map(N : integer := 211)
+	generic map(N : integer := 186)
 	port map(i_CLKn => iCLK,
 		 i_RSTn => iRST,
-		 i_WEn => 1,
+		 i_WEn => iCLK,
 		 i_RS_RegOut => s_rsOut,
 		 i_RT_RegOut => s_rtOut,
 		 i_SignExtendOut => s_signExtended, 
@@ -489,15 +494,24 @@ begin
 		 i_MemToReg => s_memToReg,
 		 i_RegWrite => s_regWrite,
 		 i_JalControl => s_jal,
-		 i_shamt => s_shAmt,
+		 i_shamt => s_shAmt,	
+		 i_LuiInst => IFIDluiInst,
 		 o_RS_RegOut => IDEX_RS_RegOut,
 		 o_RT_RegOut => IDEX_RT_RegOut,
 		 o_SignExtendOut => IDEX_SignExtend,
 		 o_UpdatedPC => IDEX_UpdatedPC,
 		 o_Instruction => IDEXInst,
 		 o_rsAdd => IDEXrsAdd,
-		 
-		 
+		 o_rsAdd => IDEXrtAdd,
+		 o_ALUControlOut => IDEXALUControlOut,
+		 o_ALUSrc => IDEXALUSrc,
+		 o_RegDst => IDEXRegDst,
+		 o_MemWrite => IDEXMemWrite,
+		 o_MemToReg => IDEXMemToReg,
+		 o_RegWrite => IDEXRegWrite,
+		 o_JalControl => IDEXJalControl,
+		 o_shamt => IDEXshamt,
+		 o_LuiInst => IDEXluiInst
 	);
     JrMux : mux2t1_N
 	generic map(N => N)
@@ -512,17 +526,17 @@ begin
 
   ALUmux : mux2t1_N
 	generic map(N => N)
-	port map(i_S 	=> s_ALUsrc,
-		 i_D0 	=> s_rtOut,
-		 i_D1 	=> s_signExtended,
+	port map(i_S 	=> IDEXALUSrc,
+		 i_D0 	=> IDEX_RT_RegOut,
+		 i_D1 	=> IDEX_SignExtend,
 		 o_O 	=> s_ALUmuxOut
 	);
 
   MainALU : ALU
-	port map(i_A => s_rsOut,
+	port map(i_A => IDEX_RS_RegOut,
 	     i_B => s_ALUmuxOut,
-	     i_shAmt => s_shAmt,
-	     i_ALUcode => s_ALUcontrolOut,
+	     i_shAmt => IDEXshamt,
+	     i_ALUcode => IDEXALUControlOut,
 	     i_repl => s_replOut, --?
 	     i_branch => s_branchSelect,
 	     o_result => s_ALUout,
@@ -532,45 +546,95 @@ begin
 	);
    InstrMux : mux2t1_5
 	generic map (N => 5)
-	port map(i_S => s_regdst,
-		 i_D0 => s_IFIDInst(20 downto 16),
-		 i_D1 => s_IFIDInst(15 downto 11),
+	port map(i_S => IDEXRegDst,
+		 i_D0 => IDEXInst(20 downto 16),
+		 i_D1 => IDEXInst(15 downto 11),
 		 o_O => s_InstrMux1Out);
    InstrMux2 : mux2t1_5
 	generic map (N => 5)
-	port map(i_S => s_jal,
+	port map(i_S => IDEXJalControl,
 		 i_D0 => s_InstrMux1Out,
 		 i_D1 => "11111",
-		 o_O => s_RegWrAddr);
+		 o_O => EXMEMRegWrAdd);
+   g_Reg_EXMEM : Reg_EXMEM
+	generic map(N => 106)
+	port map(i_CLKn => iCLK,
+		 i_RSTn => iRST,
+		 i_WEn => iCLK,
+		 i_ALUOut => s_ALUout,
+		 i_Inst => IDEXInst,
+		 i_RtRegOut => s_ALUmuxOut,
+		 i_MemToReg => IDEXMemToReg,
+		 i_RegWr => IDEXRegWrite,
+		 i_JalControl => IDEXJalControl,
+		 i_LuiControl => IDEXluiInst,
+		 i_MemWr => IDEXMemWrite,
+		 i_WriteRegAdd => EXMEMRegWrAdd,
+		 i_UpdatedPC => s_JRmuxOut32,
+		 o_ALUOut => EXMEMALUOut,
+		 o_Inst => EXMEMInst,
+		 o_RtRegOut => EXMEMRtRegOut,
+		 o_MemToReg => EXMEMMemToReg,
+		 o_RegWr => EXMEMRegWr,
+		 o_JalControl => EXMEMJalControl,
+		 o_LuiControl => EXMEMLuiControl,
+		 o_MemWr => EXMEMMemWr,
+		 o_WriteRegAdd => EXMEMWriteRegAdd,
+		 o_UpdatedPC => EXMEMUpdatedPC
+	);
 
 --MEM
 ---------------------------------------------------------------------------
 
-
+  g_RegMEMWB : RegMEMWB
+	generic map(N => 137)
+	port map(i_CLKn => iCLK,
+		 i_RSTn => iRST,
+		 i_WEn => iCLK,
+		 i_ALUOut => EXMEMALUOut,
+		 i_DMEM => s_DMemOut,
+		 i_UpdatedPC => EXMEMUpdatedPC,
+		 i_Inst => EXMEMInst,
+		 i_WriteRegAdd => EXMEMWriteRegAdd,
+		 i_MemToReg => EXMEMMemToReg,
+		 i_RegWrite => EXMEMRegWr,
+		 i_LuiControl => EXMEMLuiControl,
+		 i_JalControl => EXMEMJalControl,
+		 o_ALUOut => WBALUOut,
+		 o_DMEM => WBDMEM,
+		 o_UpdatedPC => WBUpdatedPC,
+		 o_Inst => WBInst,
+		 o_WriteRegAdd => WBWriteRegAdd,
+		 o_MemToReg => WBMemToReg,
+		 o_RegWrite => WBRegWrite,
+		 o_LuiControl => WBLuiControl,
+		 o_JalControl => WBJalControl
+	);
+		 
 
 --WB
 ---------------------------------------------------------------------------
   memToRegMux : mux2t1_N
 	generic map(N => N)
-	port map(i_S => s_memToReg,
-		 i_D0 => s_ALUout,
-		 i_D1 => s_DMemOut,
+	port map(i_S => WBMemToReg,
+		 i_D0 => WBALUOut,
+		 i_D1 => WBDMEM,
 		 o_O => s_memToRegOut
 	);
 
   luiMux : mux2t1_N
 	generic map(N=>N)
-	port map(i_S => s_luiInst,
+	port map(i_S => WBLuiControl,
 		 i_D0 => s_memToRegOut,
-		 i_D1 => s_Inst(15 downto 0) & x"0000",
+		 i_D1 => WBInst(15 downto 0) & x"0000",
 		 o_O => s_luiMuxOut
 	);
 
   JalWrite : mux2t1_N
 	generic map(N => N)
-	port map(i_S => s_jal,
+	port map(i_S => WBJalControl,
 		 i_D0 => s_luiMuxOut,
-		 i_D1 => s_JALAdd,
+		 i_D1 => WBJalControl,
 		 o_O => s_RegWrData
 	);
 
