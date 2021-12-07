@@ -18,16 +18,16 @@
 library IEEE;
 use IEEE.std_logic_1164.all;
 
-entity register_184 is
-  generic(N : integer := 184); -- Generic of type integer for input/output data width. Default value is 32.
+entity register_173 is
+  generic(N : integer := 173); -- Generic of type integer for input/output data width. Default value is 32.
   port(i_CLKn        : in std_logic;     -- Clock input
        i_RSTn        : in std_logic;     -- Reset input
        i_WEn         : in std_logic;     -- Write enable input
        i_Dn          : in std_logic_vector(N-1 downto 0);     -- Data value input
        o_Qn          : out std_logic_vector(N-1 downto 0));   -- Data value output
-end register_184;
+end register_174;
 
-architecture structural of register_184 is
+architecture structural of register_173 is
 
   component dffg is
     port(i_CLK        : in std_logic;     -- Clock input

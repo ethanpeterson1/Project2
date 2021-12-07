@@ -298,6 +298,8 @@ end component;
 	signal s_PCAdderOut : std_logic_vector(31 downto 0);
 	signal s_IFIDInst : std_logic_vector(31 downto 0);
 	signal s_IFIDPC : std_logic_vector(31 downto 0);
+	signal s_BranchPC : std_logic_vector(31 downto 0);
+	signal s_shiftedL2Out : std_logic_vector(31 downto 0);
 
 begin
 
@@ -394,19 +396,6 @@ begin
 		 ImmType	=> s_ImmType
 	);
 
-   InstrMux : mux2t1_5
-	generic map (N => 5)
-	port map(i_S => s_regdst,
-		 i_D0 => s_Inst(20 downto 16),
-		 i_D1 => s_Inst(15 downto 11),
-		 o_O => s_InstrMux1Out);
-   InstrMux2 : mux2t1_5
-	generic map (N => 5)
-	port map(i_S => s_jal,
-		 i_D0 => s_InstrMux1Out,
-		 i_D1 => "11111",
-		 o_O => s_RegWrAddr);
-
   signExtend : SignExtender 
 	port map(i_S => s_signExtendControl,
 		 i_Extend => s_Inst(15 downto 0),
@@ -419,16 +408,16 @@ begin
 
   g_BRANCHADDRADDER: ripplecarryadd_N		--fulladder_n
     port MAP(
-	i_Ain		=> ,
-	i_Bin      	=> ,	
+	i_Ain		=> s_IFIDPC,
+	i_Bin      	=> s_shiftedL2Out,	
 	i_Cin		=> '0',
-	o_Cout		=> ,
-        o_R            	=> );
+	o_Cout		=> s_toNothing,
+        o_R            	=> s_BranchPC);
 
   g_MUX2T1PCSrc: mux2t1_N
     port MAP(
 	i_S		=> iBranchControl,
-	i_D0      	=> s_PCAdderOut,
+	i_D0      	=> s_IFIDPC,
 	i_D1		=> s_BranchPC,
         o_O            	=> s_BranchPCMuxout);
 
@@ -437,9 +426,9 @@ begin
 		 out28shifted => s_jumpAdd);
 
   muxJump : mux2t1_N
-	port map(i_S    => iJumpControl,
+	port map(i_S    => s_jump,
 		 i_D0   => s_BranchPCMuxout,
-		 i_D1   => s_FinalJumpAdd,
+		 i_D1   => s_jumpAdd,
 		 o_O    => oUpdatedPCAdd
 	);
 
@@ -482,11 +471,13 @@ begin
 		 i_RS_RegOut => s_rsOut,
 		 i_RT_RegOut => s_rtOut,
 		 i_SignExtendOut => s_signExtended, 
+		 i_UpdatedPC => s_JRmuxOut32,
+		 i_Instruction => 
 	);
     JrMux : mux2t1_N
 	generic map(N => N)
 	port map(i_S => s_jr,
-		 i_D0 => s_IFIDOut,
+		 i_D0 => oUpdatedPCAdd,
 		 i_D1 => s_rsOut,
 		 o_O => s_JRmuxOut32
 	);

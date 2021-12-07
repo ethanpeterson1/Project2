@@ -3,7 +3,7 @@ use IEEE.std_logic_1164.all;
 
 
 entity Reg_IDEX is
-generic(N : integer := 184);
+generic(N : integer := 173);
   port(	i_CLKn        	: in std_logic;     -- Clock input
        	i_RSTn        	: in std_logic;     -- Reset input
        	i_WEn         	: in std_logic;     -- Write enable input
@@ -17,19 +17,19 @@ generic(N : integer := 184);
 	i_rsAdd		: in std_logic_vector(4 downto 0);
 	i_rtAdd		: in std_logic_vector(4 downto 0);
 	i_Write_Reg_Add	: in std_logic_vector(4 downto 0);
-	i_ALUOP		: in std_logic_vector(3 downto 0);
+	--i_ALUOP		: in std_logic_vector(3 downto 0);
 	i_ALUControlOut	: in std_logic_vector(3 downto 0);
        	i_ALUSrc	: in std_logic;
-	i_RegDst	: in std_logic;
+	--i_RegDst	: in std_logic;
 	i_MemWrite	: in std_logic;
-	i_Branch	: in std_logic;
+	--i_Branch	: in std_logic;
 	i_MemToReg	: in std_logic;
 	i_RegWrite	: in std_logic;
-	i_ExtendControl	: in std_logic;
-	i_ImmType	: in std_logic;
-	i_JumpControl	: in std_logic;
-	i_JRControl	: in std_logic;
-	i_BranchSelect 	: in std_logic;
+	--i_ExtendControl	: in std_logic;
+	--i_ImmType	: in std_logic;
+	--i_JumpControl	: in std_logic;
+	--i_JRControl	: in std_logic;
+	--i_BranchSelect 	: in std_logic;
 	i_JalControl	: in std_logic;
 	i_shamt		: in std_logic_vector(4 downto 0);
 
@@ -42,53 +42,45 @@ generic(N : integer := 184);
   	o_rsAdd        	: out std_logic_vector(4 downto 0);
    	o_rtAdd        	: out std_logic_vector(4 downto 0);
 	o_Write_Reg_Add	: out std_logic_vector(4 downto 0);
-   	o_ALUOP        	: out std_logic_vector(3 downto 0);
+   	--o_ALUOP        	: out std_logic_vector(3 downto 0);
    	o_ALUControlOut : out std_logic_vector(3 downto 0);
    	o_ALUSrc    	: out std_logic;
-    	o_RegDst    	: out std_logic;
+    	--o_RegDst    	: out std_logic;
    	o_MemWrite    	: out std_logic;
-    	o_Branch    	: out std_logic;
+    	--o_Branch    	: out std_logic;
     	o_MemToReg    	: out std_logic;
     	o_RegWrite    	: out std_logic;
-    	o_ExtendControl : out std_logic;
-    	o_ImmType    	: out std_logic;
-    	o_JumpControl   : out std_logic;
-    	o_JRControl    	: out std_logic;
-    	o_BranchSelect  : out std_logic;
+    	--o_ExtendControl : out std_logic;
+    	--o_ImmType    	: out std_logic;
+    	--o_JumpControl   : out std_logic;
+    	--o_JRControl    	: out std_logic;
+    	--o_BranchSelect  : out std_logic;
     	o_JalControl    : out std_logic;
 	o_shamt		: out std_logic_vector(4 downto 0));
 
 end Reg_IDEX;
 
 architecture structural of Reg_IDEX is
-component register_184 is
+component register_173 is
 port(i_CLKn        : in std_logic;     -- Clock input
        i_RSTn        : in std_logic;     -- Reset input
        i_WEn         : in std_logic;     -- Write enable input
-       i_Dn          : in std_logic_vector(183 downto 0);     -- Data value input
-       o_Qn          : out std_logic_vector(183 downto 0));   -- Data value output
+       i_Dn          : in std_logic_vector(172 downto 0);     -- Data value input
+       o_Qn          : out std_logic_vector(172 downto 0));   -- Data value output
 end component;
 
-signal S_Reg_Inputs: std_logic_vector(183 downto 0);
-signal S_Reg_Outputs: std_logic_vector(183 downto 0);
+signal S_Reg_Inputs: std_logic_vector(172 downto 0);
+signal S_Reg_Outputs: std_logic_vector(172 downto 0);
 
 begin
 S_Reg_Inputs <= 
 i_shamt &
 i_JalControl &
-i_BranchSelect &
-i_JRControl &
-i_JumpControl &
-i_ImmType &
-i_ExtendControl &
 i_RegWrite &
 i_MemToReg &
-i_Branch &
 i_MemWrite &
-i_RegDst &
 i_ALUSrc &
 i_ALUControlOut &
-i_ALUOP &
 i_Write_Reg_Add &
 i_rtAdd     &
 i_rsAdd &
@@ -99,7 +91,7 @@ i_RT_RegOut &
 i_RS_RegOut;
 
 
-REG: register_183 port map(
+REG: register_173 port map(
 	i_CLKn => i_CLKn, 
        	i_RSTn => i_RSTn,
        	i_WEn  => i_WEn,
@@ -114,21 +106,21 @@ o_Instruction <= S_Reg_Outputs(143 downto 128);
 o_rsAdd <= S_Reg_Outputs(148 downto 144);
 o_rtAdd     <= S_Reg_Outputs(153 downto 149);
 o_Write_Reg_Add <= S_Reg_Outputs(158 downto 154);
-o_ALUOP <= S_Reg_Outputs(162 downto 159);
-o_ALUControlOut <= S_Reg_Outputs(166 downto 163);
-o_ALUSrc <= S_Reg_Outputs(167);
-o_RegDst <= S_Reg_Outputs(168);
-o_MemWrite <= S_Reg_Outputs(169);
-o_Branch <= S_Reg_Outputs(170);
-o_MemToReg <= S_Reg_Outputs(171);
-o_RegWrite <= S_Reg_Outputs(172);
-o_ExtendControl <= S_Reg_Outputs(173);
-o_ImmType <= S_Reg_Outputs(174);
-o_JumpControl <= S_Reg_Outputs(175);
-o_JRControl <= S_Reg_Outputs(176);
-o_BranchSelect <= S_Reg_Outputs(177);
-o_JalControl  <= S_Reg_Outputs(178);
-o_shamt	<= S_Reg_Outputs(183 downto 179);
+--o_ALUOP <= S_Reg_Outputs(162 downto 159);
+o_ALUControlOut <= S_Reg_Outputs(162 downto 159);
+o_ALUSrc <= S_Reg_Outputs(163);
+--o_RegDst <= S_Reg_Outputs(164);
+o_MemWrite <= S_Reg_Outputs(164);
+--o_Branch <= S_Reg_Outputs(165);
+o_MemToReg <= S_Reg_Outputs(165);
+o_RegWrite <= S_Reg_Outputs(166);
+--o_ExtendControl <= S_Reg_Outputs(167);
+--o_ImmType <= S_Reg_Outputs(168);
+--o_JumpControl <= S_Reg_Outputs(170);
+--o_JRControl <= S_Reg_Outputs(171);
+--o_BranchSelect <= S_Reg_Outputs(172);
+o_JalControl  <= S_Reg_Outputs(167);
+o_shamt	<= S_Reg_Outputs(172 downto 168);
 
 
 end structural;
