@@ -300,7 +300,14 @@ end component;
 	signal s_IFIDPC : std_logic_vector(31 downto 0);
 	signal s_BranchPC : std_logic_vector(31 downto 0);
 	signal s_shiftedL2Out : std_logic_vector(31 downto 0);
-
+	signal s_memWrite : std_logic;
+	signal s_regWrite : std_logic;
+	signal IDEX_RS_RegOut : std_logic_vector(31 downto 0);
+	signal IDEX_RT_RegOut : std_logic_vector(31 downto 0);
+	signal IDEX_SignExtend : std_logic_vector(31 downto 0);
+	signal IDEX_UpdatedPC : std_logic_vector(31 downto 0);
+	signal IDEXInst : std_logic_vector(31 downto 0);
+	signal IDEXrsAdd : std_logic_vector(4 downto 0);
 begin
 
   -- TODO: This is required to be your final input to your instruction memory. This provides a feasible method to externally load the memory module which means that the synthesis tool must assume it knows nothing about the values stored in the instruction memory. If this is not included, much, if not all of the design is optimized out because the synthesis tool will believe the memory to be all zeros.
@@ -369,15 +376,15 @@ begin
 ---------------------------------------------------------------------------
 
   control : controlUnit
-	port map(opcode => s_Inst(31 downto 26),
-		 functionF => s_Inst(5 downto 0),
+	port map(opcode => s_IFIDInst(31 downto 26),
+		 functionF => s_IFIDInst(5 downto 0),
 		 reg_dst => s_regdst,
 		 jump => s_jump,
 		 branch => s_branch,
 		 memToReg => s_memToReg,
-		 memWrite => s_DMemWr,
+		 memWrite => s_memWrite,
 		 ALUsrc => s_ALUsrc,
-		 regWrite => s_RegWr,
+		 regWrite => s_regWrite,
 		 signExtend => s_signExtendControl,
 		 jr => s_jr,
 		 jal => s_jal,
@@ -388,7 +395,7 @@ begin
 
   ALUcont : ALUcontrol
 	port map(ALUOP 		=> s_ALUOP,
-		 functionF 	=> s_Inst(10 downto 0),
+		 functionF 	=> s_IFIDInst(10 downto 0),
 		 shAmt 		=> s_shAmt,
 		 branchSelect 	=> s_branchSelect,
 		 ALUcontrolOut 	=> s_ALUcontrolOut,
@@ -435,8 +442,8 @@ begin
    InstrMux : mux2t1_5
 	generic map (N => 5)
 	port map(i_S => s_regdst,
-		 i_D0 => s_Inst(20 downto 16),
-		 i_D1 => s_Inst(15 downto 11),
+		 i_D0 => s_IFIDInst(20 downto 16),
+		 i_D1 => s_IFIDInst(15 downto 11),
 		 o_O => s_InstrMux1Out);
    InstrMux2 : mux2t1_5
 	generic map (N => 5)
@@ -447,7 +454,7 @@ begin
 
   JrMuxInputReg : mux2t1_5
 	port map(i_S => s_jr,
-		 i_D0 => s_Inst(25 downto 21),
+		 i_D0 => s_IFIDInst(25 downto 21),
 		 i_D1 => "11111",
 		 o_O => s_jrMuxOut
 	);
@@ -458,7 +465,7 @@ begin
 		 w_En => s_RegWr,
 		 w_Data => s_RegWrData,
 		 r_add1 => s_jrMuxOut,
-		 r_add2 => s_Inst(20 downto 16),
+		 r_add2 => s_IFIDInst(20 downto 16),
 		 i_CLK => iCLK,
 		 rst => iRST,
 		 rs_out => s_rsOut,
@@ -472,7 +479,25 @@ begin
 		 i_RT_RegOut => s_rtOut,
 		 i_SignExtendOut => s_signExtended, 
 		 i_UpdatedPC => s_JRmuxOut32,
-		 i_Instruction => 
+		 i_Instruction => s_IFIDInst,
+		 i_rsAdd => s_jrMuxOut
+		 i_rtAdd => s_IFIDInst(20 downto 16),
+		 i_ALUControlOut => s_ALUcontrolOut,
+		 i_ALUSrc => s_ALUsrc,
+		 i_RegDst => s_regdst,
+		 i_MemWrite => s_memWrite,
+		 i_MemToReg => s_memToReg,
+		 i_RegWrite => s_regWrite,
+		 i_JalControl => s_jal,
+		 i_shamt => s_shAmt,
+		 o_RS_RegOut => IDEX_RS_RegOut,
+		 o_RT_RegOut => IDEX_RT_RegOut,
+		 o_SignExtendOut => IDEX_SignExtend,
+		 o_UpdatedPC => IDEX_UpdatedPC,
+		 o_Instruction => IDEXInst,
+		 o_rsAdd => IDEXrsAdd,
+		 
+		 
 	);
     JrMux : mux2t1_N
 	generic map(N => N)
@@ -505,6 +530,18 @@ begin
 	     o_carry => s_toNothing,
 	     o_oF => s_Ovfl
 	);
+   InstrMux : mux2t1_5
+	generic map (N => 5)
+	port map(i_S => s_regdst,
+		 i_D0 => s_IFIDInst(20 downto 16),
+		 i_D1 => s_IFIDInst(15 downto 11),
+		 o_O => s_InstrMux1Out);
+   InstrMux2 : mux2t1_5
+	generic map (N => 5)
+	port map(i_S => s_jal,
+		 i_D0 => s_InstrMux1Out,
+		 i_D1 => "11111",
+		 o_O => s_RegWrAddr);
 
 --MEM
 ---------------------------------------------------------------------------

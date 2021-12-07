@@ -3,7 +3,7 @@ use IEEE.std_logic_1164.all;
 
 
 entity Reg_IDEX is
-generic(N : integer := 174);
+generic(N : integer := 173);
   port(	i_CLKn        	: in std_logic;     -- Clock input
        	i_RSTn        	: in std_logic;     -- Reset input
        	i_WEn         	: in std_logic;     -- Write enable input
@@ -25,7 +25,7 @@ generic(N : integer := 174);
 	--i_Branch	: in std_logic;
 	i_MemToReg	: in std_logic;
 	i_RegWrite	: in std_logic;
-	i_ExtendControl	: in std_logic;
+	--i_ExtendControl	: in std_logic;
 	--i_ImmType	: in std_logic;
 	--i_JumpControl	: in std_logic;
 	--i_JRControl	: in std_logic;
@@ -50,7 +50,7 @@ generic(N : integer := 174);
     	--o_Branch    	: out std_logic;
     	o_MemToReg    	: out std_logic;
     	o_RegWrite    	: out std_logic;
-    	o_ExtendControl : out std_logic;
+    	--o_ExtendControl : out std_logic;
     	--o_ImmType    	: out std_logic;
     	--o_JumpControl   : out std_logic;
     	--o_JRControl    	: out std_logic;
@@ -61,23 +61,21 @@ generic(N : integer := 174);
 end Reg_IDEX;
 
 architecture structural of Reg_IDEX is
-component register_178 is
+component register_173 is
 port(i_CLKn        : in std_logic;     -- Clock input
        i_RSTn        : in std_logic;     -- Reset input
        i_WEn         : in std_logic;     -- Write enable input
-       i_Dn          : in std_logic_vector(173 downto 0);     -- Data value input
-       o_Qn          : out std_logic_vector(173 downto 0));   -- Data value output
+       i_Dn          : in std_logic_vector(172 downto 0);     -- Data value input
+       o_Qn          : out std_logic_vector(172 downto 0));   -- Data value output
 end component;
 
-signal S_Reg_Inputs: std_logic_vector(173 downto 0);
-signal S_Reg_Outputs: std_logic_vector(173 downto 0);
+signal S_Reg_Inputs: std_logic_vector(172 downto 0);
+signal S_Reg_Outputs: std_logic_vector(172 downto 0);
 
 begin
 S_Reg_Inputs <= 
 i_shamt &
 i_JalControl &
-i_ImmType &
-i_ExtendControl &
 i_RegWrite &
 i_MemToReg &
 i_MemWrite &
@@ -93,7 +91,7 @@ i_RT_RegOut &
 i_RS_RegOut;
 
 
-REG: register_174 port map(
+REG: register_173 port map(
 	i_CLKn => i_CLKn, 
        	i_RSTn => i_RSTn,
        	i_WEn  => i_WEn,
@@ -116,13 +114,13 @@ o_MemWrite <= S_Reg_Outputs(164);
 --o_Branch <= S_Reg_Outputs(165);
 o_MemToReg <= S_Reg_Outputs(165);
 o_RegWrite <= S_Reg_Outputs(166);
-o_ExtendControl <= S_Reg_Outputs(167);
+--o_ExtendControl <= S_Reg_Outputs(167);
 --o_ImmType <= S_Reg_Outputs(168);
 --o_JumpControl <= S_Reg_Outputs(170);
 --o_JRControl <= S_Reg_Outputs(171);
 --o_BranchSelect <= S_Reg_Outputs(172);
-o_JalControl  <= S_Reg_Outputs(168);
-o_shamt	<= S_Reg_Outputs(173 downto 169);
+o_JalControl  <= S_Reg_Outputs(167);
+o_shamt	<= S_Reg_Outputs(172 downto 168);
 
 
 end structural;
