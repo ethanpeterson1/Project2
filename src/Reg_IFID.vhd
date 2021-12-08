@@ -29,8 +29,8 @@ signal S_Reg_Outputs: std_logic_vector(63 downto 0);
 
 begin
 
-S_Reg_Inputs <= --i_Flush & 
-i_PC & i_Instruction;
+S_Reg_Inputs <= i_PC & i_Instruction;
+--i_Flush & i_PC & i_Instruction;
 
 REG: register_64 port map(
 	i_CLKn => i_CLKn, 

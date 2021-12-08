@@ -92,7 +92,7 @@ port(	i_A          : in std_logic;
 end component;
 
 signal s_addsub, s_and, s_or, s_xor, s_nor, s_slt, s_repl, s_shifter: std_logic_vector(31 downto 0);
-signal nor_out, not_out, s_overflow : std_logic;
+signal s_overflow : std_logic;
 
 begin
 o_of <= s_overflow;

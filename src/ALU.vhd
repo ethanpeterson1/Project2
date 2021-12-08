@@ -7,7 +7,6 @@ port(	i_A  :in std_logic_vector (31 downto 0);
 	i_shamt :in std_logic_vector(4 downto 0);
 	i_ALUcode :in std_logic_vector(3 downto 0);
 	i_repl	:in std_logic_vector(7 downto 0);
-	i_branch: in std_logic;
 	o_result :out std_logic_vector (31 downto 0);
 	o_carry, o_oF :out std_logic);
 end ALU;

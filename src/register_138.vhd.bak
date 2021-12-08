@@ -19,7 +19,7 @@ library IEEE;
 use IEEE.std_logic_1164.all;
 
 entity register_138 is
-  generic(N : integer := 138); -- Generic of type integer for input/output data width. Default value is 32.
+  generic(N : integer := 106); -- Generic of type integer for input/output data width. Default value is 32.
   port(i_CLKn        : in std_logic;     -- Clock input
        i_RSTn        : in std_logic;     -- Reset input
        i_WEn         : in std_logic;     -- Write enable input
