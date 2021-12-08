@@ -138,9 +138,14 @@ architecture structure of MIPS_Processor is
 	     i_shamt :in std_logic_vector(4 downto 0);
 	     i_ALUcode :in std_logic_vector(3 downto 0);
 	     i_repl	:in std_logic_vector(7 downto 0);
-	     i_branch: in std_logic;
 	     o_result :out std_logic_vector (31 downto 0);
 	     o_zero, o_carry, o_oF :out std_logic);
+  end component;
+
+  component comparator32 is
+	port(iCompVal1		: in std_logic_vector(31 downto 0);
+	iCompVal2		: in std_logic_vector(31 downto 0);
+	oNotEqual		: out std_logic);
   end component;
 
   component shiftleft2 is
@@ -178,7 +183,7 @@ architecture structure of MIPS_Processor is
 
   component shiftleft226bit is 
 	  port(in26        : in std_logic_vector(25 downto 0);  
-               out28shifted         : out std_logic_vector(28 downto 0)
+               out28shifted         : out std_logic_vector(27 downto 0)
 	);  
 	end component;
 
@@ -189,38 +194,56 @@ architecture structure of MIPS_Processor is
              i_D          : in std_logic_vector(31 downto 0);     -- Data value input
              o_Q          : out std_logic_vector(31 downto 0)
 	);
+  end component;
+
+component ripplecarryadd_n is
+  generic(N : integer := 32); -- Generic of type integer for input/output data width. Default value is 32.
+  port(
+      i_Ain          : in std_logic_vector(N-1 downto 0);
+      i_Bin          : in std_logic_vector(N-1 downto 0);
+      i_Cin          : in std_logic;
+      o_Cout         : out std_logic;
+      o_R            : out std_logic_vector(N-1 downto 0));
 end component;
+
    component Reg_IDEX is
 	generic(N : integer := 211);
-	port(i_CLKn        	: in std_logic;     -- Clock input
+	port(	i_CLKn        	: in std_logic;     -- Clock input
        	i_RSTn        	: in std_logic;     -- Reset input
        	i_WEn         	: in std_logic;     -- Write enable input
 
-
-	i_ALUOut	: in std_logic_vector(31 downto 0);
-	i_Forward_ALUOut: in std_logic_vector(31 downto 0);
-	i_OutMux	: in std_logic_vector(31 downto 0);
-	i_RSOut		: in std_logic_vector(31 downto 0);
-	i_IFID_Out	: in std_logic_vector(31 downto 0);
-	i_WriteRegAdd	: in std_logic_vector(4 downto 0);
-	i_jrControl	: in std_logic;
+	i_RS_RegOut	: in std_logic_vector(31 downto 0);
+	i_RT_RegOut	: in std_logic_vector(31 downto 0);
+	i_SignExtendOut	: in std_logic_vector(31 downto 0);
+	i_UpdatedPC	: in std_logic_vector(31 downto 0);
+	i_Instruction	: in std_logic_vector(31 downto 0);
+	i_rsAdd		: in std_logic_vector(4 downto 0);
+	i_rtAdd		: in std_logic_vector(4 downto 0);
+	i_ALUControlOut	: in std_logic_vector(3 downto 0);
+       	i_ALUSrc	: in std_logic;
+	i_RegDst	: in std_logic;
 	i_MemWrite	: in std_logic;
-	i_Branch	: in std_logic;
 	i_MemToReg	: in std_logic;
 	i_RegWrite	: in std_logic;
-
-	o_ALUOut	: out std_logic_vector(31 downto 0);
-	o_Forward_ALUOut: out std_logic_vector(31 downto 0);
-	o_OutMux	: out std_logic_vector(31 downto 0);
-	o_RSOut		: out std_logic_vector(31 downto 0);
-	o_IFID_Out	: out std_logic_vector(31 downto 0);
-	o_WriteRegAdd	: out std_logic_vector(4 downto 0);
-	o_jrControl	: out std_logic;
+	i_JalControl	: in std_logic;
+	i_shamt		: in std_logic_vector(4 downto 0);
+	i_LuiInst       : in std_logic;
+	o_RS_RegOut    	: out std_logic_vector(31 downto 0);
+    	o_RT_RegOut    	: out std_logic_vector(31 downto 0);
+    	o_SignExtendOut : out std_logic_vector(31 downto 0);
+   	o_UpdatedPC    	: out std_logic_vector(31 downto 0);
+   	o_Instruction   : out std_logic_vector(31 downto 0);
+  	o_rsAdd        	: out std_logic_vector(4 downto 0);
+   	o_rtAdd        	: out std_logic_vector(4 downto 0);
+   	o_ALUControlOut : out std_logic_vector(3 downto 0);
+   	o_ALUSrc    	: out std_logic;
+    	o_RegDst    	: out std_logic;
    	o_MemWrite    	: out std_logic;
-    	o_Branch    	: out std_logic;
     	o_MemToReg    	: out std_logic;
-    	o_RegWrite    	: out std_logic
-	);
+    	o_RegWrite    	: out std_logic;
+    	o_JalControl    : out std_logic;
+	o_shamt		: out std_logic_vector(4 downto 0);
+	o_LuiInst	: out std_logic);
 end component;
     component Reg_IFID is
 	generic(N : integer := 64);
@@ -229,43 +252,72 @@ end component;
        	i_WEn         	: in std_logic;     -- Write enable input
        	i_Instruction 	: in std_logic_vector(31 downto 0);    
 	i_PC		: in std_logic_vector(31 downto 0);
-	i_Flush		: in std_logic;
+	--i_Flush		: in std_logic;
 	o_Instruction 	: out std_logic_vector(31 downto 0);    
-	o_PC		: out std_logic_vector(31 downto 0);
+	o_PC		: out std_logic_vector(31 downto 0)
 	--o_Flush		: out std_logic WILL BE IMPLEMENTED FOR HARDWARE SCHEDULE PIPELINE
 	);
 end component;
     component Reg_MEMWB is
-	generic(N : integer := 170);
-	port(i_CLKn        	: in std_logic;     -- Clock input
+	generic(N : integer := 137);
+	port(	i_CLKn        	: in std_logic;     -- Clock input
        	i_RSTn        	: in std_logic;     -- Reset input
        	i_WEn         	: in std_logic;     -- Write enable input
 
 
 	i_ALUOut	: in std_logic_vector(31 downto 0);
-	i_Forward_ALUOut: in std_logic_vector(31 downto 0);
-	i_OutMux	: in std_logic_vector(31 downto 0);
-	i_RSOut		: in std_logic_vector(31 downto 0);
-	i_IFID_Out	: in std_logic_vector(31 downto 0);
+	i_DMEM		: in std_logic_vector(31 downto 0);
+	i_UpdatedPC	: in std_logic_vector(31 downto 0);
+	i_Inst		: in std_logic_vector(31 downto 0);
 	i_WriteRegAdd	: in std_logic_vector(4 downto 0);
-	i_jrControl	: in std_logic;
-	i_MemWrite	: in std_logic;
-	i_Branch	: in std_logic;
 	i_MemToReg	: in std_logic;
 	i_RegWrite	: in std_logic;
+	i_LuiControl	: in std_logic;
+	i_JalControl	: in std_logic;
 
 	o_ALUOut	: out std_logic_vector(31 downto 0);
-	o_Forward_ALUOut: out std_logic_vector(31 downto 0);
-	o_OutMux	: out std_logic_vector(31 downto 0);
-	o_RSOut		: out std_logic_vector(31 downto 0);
-	o_IFID_Out	: out std_logic_vector(31 downto 0);
+	o_DMEM		: out std_logic_vector(31 downto 0);
+	o_UpdatedPC	: out std_logic_vector(31 downto 0);
+	o_Inst		: out std_logic_vector(31 downto 0);
 	o_WriteRegAdd	: out std_logic_vector(4 downto 0);
-	o_jrControl	: out std_logic;
-   	o_MemWrite    	: out std_logic;
-    	o_Branch    	: out std_logic;
     	o_MemToReg    	: out std_logic;
-    	o_RegWrite    	: out std_logic
-	);
+    	o_RegWrite    	: out std_logic;
+	o_LuiControl	: out std_logic;
+	o_JalControl	: out std_logic);
+end component;
+
+	component Reg_EXMEM is
+	generic(N : integer := 138);
+  port(	i_CLKn        	: in std_logic;     -- Clock input
+       	i_RSTn        	: in std_logic;     -- Reset input
+       	i_WEn         	: in std_logic;     -- Write enable input
+
+
+	i_ALUOut	: in std_logic_vector(31 downto 0);
+	i_Inst          : in std_logic_vector(31 downto 0);
+	i_RtRegOut	: in std_logic_vector(31 downto 0);
+	i_MemToReg	: in std_logic;
+	i_RegWr		: in std_logic;
+	i_JalControl	: in std_logic;
+        i_LuiControl	: in std_logic;
+	i_MemWr		: in std_logic;
+	i_WriteRegAdd	: in std_logic_vector(4 downto 0);
+	i_UpdatedPC	: in std_logic_vector(31 downto 0);
+
+	
+	o_ALUOut	: out std_logic_vector(31 downto 0);
+	o_Inst          : out std_logic_vector(31 downto 0);
+	o_RtRegOut	: out std_logic_vector(31 downto 0);
+	o_MemToReg	: out std_logic;
+	o_RegWr		: out std_logic;
+	o_JalControl	: out std_logic;
+        o_LuiControl	: out std_logic;
+	o_MemWr		: out std_logic;
+	o_WriteRegAdd	: out std_logic_vector(4 downto 0);
+	o_UpdatedPC	: out std_logic_vector(31 downto 0));
+	
+
+end component;
 
   -- TODO: You may add any additional signals or components your implementation 
   --       requires below this comment
@@ -279,7 +331,6 @@ end component;
 	signal s_ALUmuxOut : std_logic_vector(31 downto 0);
 	signal s_replOut : std_logic_vector(7 downto 0);
 	signal s_ALUout : std_logic_vector(31 downto 0);	
-	signal s_ALUzero : std_logic;
 	signal s_OutAnd : std_logic;
 	signal s_signExtended, s_shiftToAdder : std_logic_vector(31 downto 0);
 	signal s_shiftAdderOut : std_logic_vector(31 downto 0);
@@ -314,6 +365,8 @@ end component;
 	signal WBWriteRegAdd : std_logic_vector(4 downto 0);
 	signal WBMemToReg,WBRegWrite,WBLuiControl,WBJalControl : std_logic;
 	signal s_BranchControl : std_logic;
+	signal s_comparator :std_logic;
+	signal s_BranchPCMuxout: std_logic_vector(31 downto 0);
 begin
 
   -- TODO: This is required to be your final input to your instruction memory. This provides a feasible method to externally load the memory module which means that the synthesis tool must assume it knows nothing about the values stored in the instruction memory. If this is not included, much, if not all of the design is optimized out because the synthesis tool will believe the memory to be all zeros.
@@ -368,7 +421,7 @@ begin
 	i_Cin		=> '0',
 	o_Cout		=> s_toNothing,
         o_R            	=> s_PCAdderOut);
-   g_RegIFID: RegIFID
+   g_RegIFID: Reg_IFID
 	port MAP(i_CLKn => iCLK,
 		 i_RSTn => iRST,
 		 i_WEn  => iCLK,
@@ -446,21 +499,8 @@ begin
 	port map(i_S    => s_jump,
 		 i_D0   => s_BranchPCMuxout,
 		 i_D1   => s_IFIDPC(31 downto 28) & s_jumpAdd,
-		 o_O    => oUpdatedPCAdd
+		 o_O    => s_UpdatedPCAdd
 	);
-
-   InstrMux : mux2t1_5
-	generic map (N => 5)
-	port map(i_S => s_regdst,
-		 i_D0 => s_IFIDInst(20 downto 16),
-		 i_D1 => s_IFIDInst(15 downto 11),
-		 o_O => s_InstrMux1Out);
-   InstrMux2 : mux2t1_5
-	generic map (N => 5)
-	port map(i_S => s_jal,
-		 i_D0 => s_InstrMux1Out,
-		 i_D1 => "11111",
-		 o_O => s_RegWrAddr);
 
   JrMuxInputReg : mux2t1_5
 	port map(i_S => s_jr,
@@ -480,8 +520,15 @@ begin
 		 rst => iRST,
 		 rs_out => s_rsOut,
 		 rt_out => s_rtOut);
+
+
+  Comparator : comparator32
+	port map(iCompVal1 => s_rsOut,
+		 iCompVal2 => s_rtOut,
+		 oNotEqual => s_comparator);
+
   g_RegIDEX : Reg_IDEX
-	generic map(N : integer := 186)
+	generic map(N => 186)
 	port map(i_CLKn => iCLK,
 		 i_RSTn => iRST,
 		 i_WEn => iCLK,
@@ -507,7 +554,7 @@ begin
 		 o_UpdatedPC => IDEX_UpdatedPC,
 		 o_Instruction => IDEXInst,
 		 o_rsAdd => IDEXrsAdd,
-		 o_rsAdd => IDEXrtAdd,
+		 o_rtAdd => IDEXrtAdd,
 		 o_ALUControlOut => IDEXALUControlOut,
 		 o_ALUSrc => IDEXALUSrc,
 		 o_RegDst => IDEXRegDst,
@@ -518,17 +565,18 @@ begin
 		 o_shamt => IDEXshamt,
 		 o_LuiInst => IDEXluiInst
 	);
+
     JrMux : mux2t1_N
 	generic map(N => N)
 	port map(i_S => s_jr,
-		 i_D0 => oUpdatedPCAdd,
+		 i_D0 => s_UpdatedPCAdd,
 		 i_D1 => s_rsOut,
 		 o_O => s_JRmuxOut32
 	);
    g_andg2 : andg2
 	port map(i_A => s_branch,
-		 i_B => ,--OUT COMPARATOR
-		 o_F => 
+		 i_B => s_comparator,
+		 o_F => s_BranchControl
 	);
 
 --EX
@@ -549,7 +597,6 @@ begin
 	     i_ALUcode => IDEXALUControlOut,
 	     i_repl => s_replOut, --?
 	     o_result => s_ALUout,
-	     o_zero => s_ALUzero,
 	     o_carry => s_toNothing,
 	     o_oF => s_Ovfl
 	);
@@ -565,6 +612,7 @@ begin
 		 i_D0 => s_InstrMux1Out,
 		 i_D1 => "11111",
 		 o_O => IDEXWriteRegAdd);
+
    g_Reg_EXMEM : Reg_EXMEM
 	generic map(N => 106)
 	port map(i_CLKn => iCLK,
@@ -595,7 +643,7 @@ begin
 --MEM
 ---------------------------------------------------------------------------
 
-  g_RegMEMWB : RegMEMWB
+  g_RegMEMWB : Reg_MEMWB
 	generic map(N => 137)
 	port map(i_CLKn => iCLK,
 		 i_RSTn => iRST,

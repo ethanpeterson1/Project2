@@ -57,8 +57,8 @@ generic(N : integer := 186);
     	--o_JRControl    	: out std_logic;
     	--o_BranchSelect  : out std_logic;
     	o_JalControl    : out std_logic;
-	o_shamt		: out std_logic_vector(4 downto 0));
-	o_LuiInst	: out std_logic;
+	o_shamt		: out std_logic_vector(4 downto 0);
+	o_LuiInst	: out std_logic);
 end Reg_IDEX;
 
 architecture structural of Reg_IDEX is

@@ -29,7 +29,7 @@ generic(N : integer := 138);
 	o_JalControl	: out std_logic;
         o_LuiControl	: out std_logic;
 	o_MemWr		: out std_logic;
-	o_WriteRegAdd	: out std_logic_vector(4 downto 0)
+	o_WriteRegAdd	: out std_logic_vector(4 downto 0);
 	o_UpdatedPC	: out std_logic_vector(31 downto 0));
 	
 
@@ -50,7 +50,7 @@ signal S_Reg_Outputs: std_logic_vector(137 downto 0);
 begin
 S_Reg_Inputs <= i_UpdatedPC &
 		i_WriteRegAdd &
-		i_MemWr
+		i_MemWr &
 		i_LuiControl & 
 		i_JalControl & 
 		i_RegWr &
@@ -71,12 +71,11 @@ o_ALUOut <= S_Reg_Outputs(31 downto 0);
 o_Inst <= S_Reg_Outputs(63 downto 32);
 o_RtRegOut <= S_Reg_Outputs(95 downto 64);
 o_MemToReg <= S_Reg_Outputs(96);
-o_RegWr <= S_RegOutputs(97);
-o_JalControl <= S_RegOutputs(98);
-o_LuiControl <= S_RegOutputs(99);
-o_MemWr <= S_RegOutputs(100);
-o_WriteRegAdd <= S_RegOutputs(105 downto 101);
-o_UpdatedPC <= S_RegOutputs(137 downto 106);
-
+o_RegWr <= S_Reg_Outputs(97);
+o_JalControl <= S_Reg_Outputs(98);
+o_LuiControl <= S_Reg_Outputs(99);
+o_MemWr <= S_Reg_Outputs(100);
+o_WriteRegAdd <= S_Reg_Outputs(105 downto 101);
+o_UpdatedPC <= S_Reg_Outputs(137 downto 106);
 
 end structural;

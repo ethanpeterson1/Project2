@@ -10,7 +10,7 @@ generic(N : integer := 64);
 	i_PC		: in std_logic_vector(31 downto 0);
 	--i_Flush		: in std_logic;
 	o_Instruction 	: out std_logic_vector(31 downto 0);    
-	o_PC		: out std_logic_vector(31 downto 0);
+	o_PC		: out std_logic_vector(31 downto 0)
 	--o_Flush		: out std_logic WILL BE IMPLEMENT FOR HARDWARD SCHEDULED PIPELINING
 	);
 end Reg_IFID;
@@ -29,7 +29,8 @@ signal S_Reg_Outputs: std_logic_vector(63 downto 0);
 
 begin
 
-S_Reg_Inputs <= i_Flush & i_PC & i_Instruction;
+S_Reg_Inputs <= --i_Flush & 
+i_PC & i_Instruction;
 
 REG: register_64 port map(
 	i_CLKn => i_CLKn, 
