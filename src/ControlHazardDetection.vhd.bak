@@ -14,7 +14,7 @@ entity ControlHazardDetection is
 --	iJRCtrl	 	: in std_logic;
 	IF_Flush 		: out std_logic; 
 	OneStall 		: out std_logic;
-	TwoStalls		: out std_logic
+	TwoStalls		: out std_logic;
  
       );
 end ControlHazardDetection;

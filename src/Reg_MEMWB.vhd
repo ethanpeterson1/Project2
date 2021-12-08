@@ -68,8 +68,8 @@ o_Inst <= S_Reg_Outputs(127 downto 96);
 o_WriteRegAdd <= S_Reg_Outputs(132 downto 128);
 o_MemToReg <= S_Reg_Outputs(133);
 o_RegWrite <= S_Reg_Outputs(134);
-o_LuiControl <= S_RegOutputs(135);
-o_JalControl <= S_RegOutputs(136);
+o_LuiControl <= S_Reg_Outputs(135);
+o_JalControl <= S_Reg_Outputs(136);
 
 
 end structural;
