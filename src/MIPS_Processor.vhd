@@ -316,6 +316,10 @@ end component;
 begin
 
   -- TODO: This is required to be your final input to your instruction memory. This provides a feasible method to externally load the memory module which means that the synthesis tool must assume it knows nothing about the values stored in the instruction memory. If this is not included, much, if not all of the design is optimized out because the synthesis tool will believe the memory to be all zeros.
+  s_DMemAddr <= EXMEMALUOut;
+  s_DMemData <= EXMEMRtRegOut;
+  s_RegWr <= EXMEMRegWr;
+  s_RegWrAddr <= WBWriteRegAdd;
   with iInstLd select
     s_IMemAddr <= s_NextInstAddr when '0',
       iInstAddr when others;
@@ -352,7 +356,7 @@ begin
     port MAP( --PC 0x00400000, special register 
 	i_CLK		=> iCLK,
 	i_RST      	=> iRST,
-	i_WE		=> '1',
+	i_WE		=> iCLK,
 	i_D		=> s_JRmuxOut32,
         o_Q            	=> s_NextInstAddr);
 
@@ -448,7 +452,7 @@ begin
 	generic map (N => 5)
 	port map(i_S => s_regdst,
 		 i_D0 => s_IFIDInst(20 downto 16),
-		 i_D1 => s_IFIDInst(15 dos_DMemOutwnto 11),
+		 i_D1 => s_IFIDInst(15 downto 11),
 		 o_O => s_InstrMux1Out);
    InstrMux2 : mux2t1_5
 	generic map (N => 5)
@@ -518,7 +522,7 @@ begin
 	port map(i_S => s_jr,
 		 i_D0 => oUpdatedPCAdd,
 		 i_D1 => s_rsOut,
-		 o_O => s_JRmuxOut32
+		 o_O => s_NextInstAddr
 	);
 
 --EX
@@ -578,7 +582,7 @@ begin
 		 o_RegWr => EXMEMRegWr,
 		 o_JalControl => EXMEMJalControl,
 		 o_LuiControl => EXMEMLuiControl,
-		 o_MemWr => EXMEMMemWr,
+		 o_MemWr => s_DMemWr,
 		 o_WriteRegAdd => EXMEMWriteRegAdd,
 		 o_UpdatedPC => EXMEMUpdatedPC
 	);
