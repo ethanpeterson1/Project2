@@ -29,8 +29,8 @@ signal S_Reg_Outputs: std_logic_vector(63 downto 0);
 
 begin
 
-S_Reg_Inputs <= --i_Flush & 
-i_PC & i_Instruction;
+S_Reg_Inputs <= i_PC & i_Instruction;
+--i_Flush & i_PC & i_Instruction;
 
 REG: register_64 port map(
 	i_CLKn => i_CLKn, 
@@ -38,9 +38,8 @@ REG: register_64 port map(
        	i_WEn  => i_WEn,
        	i_Dn   => S_Reg_Inputs,
        	o_Qn   => S_Reg_Outputs);
-
-o_Instruction 	<= S_Reg_Outputs(31 downto 0);
-o_PC		<= S_Reg_Outputs(63 downto 32);
+S_Reg_Outputs(31 downto 0)	<= o_Instruction;
+S_Reg_Outputs(63 downto 32) <= o_PC	;
 --o_Flush		<= S_Reg_Outputs(64);
 
 end structural;

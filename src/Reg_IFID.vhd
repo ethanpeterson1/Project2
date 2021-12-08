@@ -38,7 +38,6 @@ REG: register_64 port map(
        	i_WEn  => i_WEn,
        	i_Dn   => S_Reg_Inputs,
        	o_Qn   => S_Reg_Outputs);
-
 o_Instruction 	<= S_Reg_Outputs(31 downto 0);
 o_PC		<= S_Reg_Outputs(63 downto 32);
 --o_Flush		<= S_Reg_Outputs(64);
