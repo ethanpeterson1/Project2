@@ -411,7 +411,7 @@ begin
     port MAP( --PC 0x00400000, special register 
 	i_CLK		=> iCLK,
 	i_RST      	=> iRST,
-	i_WE		=> iCLK,
+	i_WE		=> '1',
 	i_D		=> s_JRmuxOut32,
         o_Q            	=> s_NextInstAddr);
 
@@ -425,7 +425,7 @@ begin
    g_RegIFID: Reg_IFID
 	port MAP(i_CLKn => iCLK,
 		 i_RSTn => iRST,
-		 i_WEn  => iCLK,
+		 i_WEn  => '1',
 		 i_Instruction => s_Inst,
 		 i_PC => s_PCAdderOut,
 		 --i_Flush => ,
@@ -532,7 +532,7 @@ begin
 	generic map(N => 186)
 	port map(i_CLKn => iCLK,
 		 i_RSTn => iRST,
-		 i_WEn => iCLK,
+		 i_WEn => '1',
 		 i_RS_RegOut => s_rsOut,
 		 i_RT_RegOut => s_rtOut,
 		 i_SignExtendOut => s_signExtended, 
@@ -618,7 +618,7 @@ begin
 	generic map(N => 106)
 	port map(i_CLKn => iCLK,
 		 i_RSTn => iRST,
-		 i_WEn => iCLK,
+		 i_WEn => '1',
 		 i_ALUOut => s_ALUout,
 		 i_Inst => IDEXInst,
 		 i_RtRegOut => IDEX_RT_RegOut,
@@ -648,7 +648,7 @@ begin
 	generic map(N => 137)
 	port map(i_CLKn => iCLK,
 		 i_RSTn => iRST,
-		 i_WEn => iCLK,
+		 i_WEn => '1',
 		 i_ALUOut => EXMEMALUOut,
 		 i_DMEM => s_DMemOut,
 		 i_UpdatedPC => EXMEMUpdatedPC,

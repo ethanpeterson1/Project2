@@ -78,5 +78,4 @@ o_MemWr <= S_Reg_Outputs(100);
 o_WriteRegAdd <= S_Reg_Outputs(105 downto 101);
 o_UpdatedPC <= S_Reg_Outputs(137 downto 106);
 
-
 end structural;

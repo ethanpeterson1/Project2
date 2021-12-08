@@ -1,5 +1,5 @@
 # vsim -c -voptargs="+acc" tb -do "../testpy/modelsim_framework.do" 
-# Start time: 22:09:39 on Dec 07,2021
+# Start time: 12:04:33 on Dec 08,2021
 # ** Note: (vsim-3813) Design is being optimized due to module recompilation...
 # //  Questa Sim-64
 # //  Version 2021.2 linux_x86_64 Apr 14 2021
@@ -73,5 +73,11 @@
 #    Time: 0 ns  Iteration: 0  Instance: /tb/MyMips/DMem
 # ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
 #    Time: 0 ns  Iteration: 0  Instance: /tb/MyMips/IMem
-# End time: 22:09:45 on Dec 07,2021, Elapsed time: 0:00:06
+# ** Note: Data structure takes 42638600 bytes of memory
+#          Process time 0.13 seconds
+#          stop
+#    Time: 520 ns  Iteration: 1  Instance: /tb
+# Break in Process P_DUMP_STATE at /home/ethanp1/ethanp1/Project2/src/tb.vhd line 146
+# Stopped at /home/ethanp1/ethanp1/Project2/src/tb.vhd line 146
+# End time: 12:04:35 on Dec 08,2021, Elapsed time: 0:00:02
 # Errors: 0, Warnings: 3
