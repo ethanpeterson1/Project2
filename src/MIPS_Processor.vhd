@@ -306,13 +306,14 @@ end component;
 	signal IDEXrsAdd,IDEXrtAdd,IDEXshamt : std_logic_vector(4 downto 0);
 	signal IDEXALUControlOut : std_logic_vector(3 downto 0);
 	signal IDEXALUSrc,IDEXRegDst,IDEXMemWrite,IDEXMemToReg,IDEXRegWrite,IDEXJalControl,IDEXluiInst : std_logic;
-	signal EXMEMRegWrAdd : std_logic_vector(4 downto 0);
+	signal IDEXWriteRegAdd : std_logic_vector(4 downto 0);
 	signal EXMEMALUOut,EXMEMInst,EXMEMRtRegOut,EXMEMUpdatedPC : std_logic_vector(31 downto 0);
 	signal EXMEMMemToReg,EXMEMRegWr,EXMEMJalControl,EXMEMLuiControl,EXMEMMemWr : std_logic;
 	signal EXMEMWriteRegAdd : std_logic_vector(4 downto 0);
 	signal WBALUOut,WBDMEM,WBUpdatedPC,WBInst : std_logic_vector(31 downto 0);
 	signal WBWriteRegAdd : std_logic_vector(4 downto 0);
 	signal WBMemToReg,WBRegWrite,WBLuiControl,WBJalControl : std_logic;
+	signal s_BranchControl : std_logic;
 begin
 
   -- TODO: This is required to be your final input to your instruction memory. This provides a feasible method to externally load the memory module which means that the synthesis tool must assume it knows nothing about the values stored in the instruction memory. If this is not included, much, if not all of the design is optimized out because the synthesis tool will believe the memory to be all zeros.
@@ -414,12 +415,12 @@ begin
 
   signExtend : SignExtender 
 	port map(i_S => s_signExtendControl,
-		 i_Extend => s_Inst(15 downto 0),
+		 i_Extend => s_IFIDInst(15 downto 0),
 		 o_Extended => s_signExtended);
 
   g_SHIFTL2: shiftleft2
     port MAP(
-	in32		=> iSignExtend,
+	in32		=> s_signExtended,
 	out32shifted	=> s_shiftedL2Out);
 
   g_BRANCHADDRADDER: ripplecarryadd_N		--fulladder_n
@@ -432,19 +433,19 @@ begin
 
   g_MUX2T1PCSrc: mux2t1_N
     port MAP(
-	i_S		=> iBranchControl,
+	i_S		=> s_BranchControl,
 	i_D0      	=> s_IFIDPC,
 	i_D1		=> s_BranchPC,
         o_O            	=> s_BranchPCMuxout);
 
    shiftL26bit : shiftleft226bit
-	port map(in26 => iUpdatedPCInstr(25 downto 0),
+	port map(in26 => s_IFIDInst(25 downto 0),
 		 out28shifted => s_jumpAdd);
 
   muxJump : mux2t1_N
 	port map(i_S    => s_jump,
 		 i_D0   => s_BranchPCMuxout,
-		 i_D1   => s_jumpAdd,
+		 i_D1   => s_IFIDPC(31 downto 28) & s_jumpAdd,
 		 o_O    => oUpdatedPCAdd
 	);
 
@@ -487,9 +488,9 @@ begin
 		 i_RS_RegOut => s_rsOut,
 		 i_RT_RegOut => s_rtOut,
 		 i_SignExtendOut => s_signExtended, 
-		 i_UpdatedPC => s_JRmuxOut32,
+		 i_UpdatedPC => s_IFIDPC,
 		 i_Instruction => s_IFIDInst,
-		 i_rsAdd => s_jrMuxOut
+		 i_rsAdd => s_jrMuxOut,
 		 i_rtAdd => s_IFIDInst(20 downto 16),
 		 i_ALUControlOut => s_ALUcontrolOut,
 		 i_ALUSrc => s_ALUsrc,
@@ -522,7 +523,12 @@ begin
 	port map(i_S => s_jr,
 		 i_D0 => oUpdatedPCAdd,
 		 i_D1 => s_rsOut,
-		 o_O => s_NextInstAddr
+		 o_O => s_JRmuxOut32
+	);
+   g_andg2 : andg2
+	port map(i_A => s_branch,
+		 i_B => ,--OUT COMPARATOR
+		 o_F => 
 	);
 
 --EX
@@ -542,7 +548,6 @@ begin
 	     i_shAmt => IDEXshamt,
 	     i_ALUcode => IDEXALUControlOut,
 	     i_repl => s_replOut, --?
-	     i_branch => s_branchSelect,
 	     o_result => s_ALUout,
 	     o_zero => s_ALUzero,
 	     o_carry => s_toNothing,
@@ -559,7 +564,7 @@ begin
 	port map(i_S => IDEXJalControl,
 		 i_D0 => s_InstrMux1Out,
 		 i_D1 => "11111",
-		 o_O => EXMEMRegWrAdd);
+		 o_O => IDEXWriteRegAdd);
    g_Reg_EXMEM : Reg_EXMEM
 	generic map(N => 106)
 	port map(i_CLKn => iCLK,
@@ -567,14 +572,14 @@ begin
 		 i_WEn => iCLK,
 		 i_ALUOut => s_ALUout,
 		 i_Inst => IDEXInst,
-		 i_RtRegOut => s_ALUmuxOut,
+		 i_RtRegOut => IDEX_RT_RegOut,
 		 i_MemToReg => IDEXMemToReg,
 		 i_RegWr => IDEXRegWrite,
 		 i_JalControl => IDEXJalControl,
 		 i_LuiControl => IDEXluiInst,
 		 i_MemWr => IDEXMemWrite,
-		 i_WriteRegAdd => EXMEMRegWrAdd,
-		 i_UpdatedPC => s_JRmuxOut32,
+		 i_WriteRegAdd => IDEXWriteRegAdd,
+		 i_UpdatedPC => IDEX_UpdatedPC,
 		 o_ALUOut => EXMEMALUOut,
 		 o_Inst => EXMEMInst,
 		 o_RtRegOut => EXMEMRtRegOut,
@@ -638,7 +643,7 @@ begin
 	generic map(N => N)
 	port map(i_S => WBJalControl,
 		 i_D0 => s_luiMuxOut,
-		 i_D1 => WBJalControl,
+		 i_D1 => WBUpdatedPC,
 		 o_O => s_RegWrData
 	);
 
