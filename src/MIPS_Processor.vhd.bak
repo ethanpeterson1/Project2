@@ -374,6 +374,7 @@ begin
   s_DMemData <= EXMEMRtRegOut;
   s_RegWr <= EXMEMRegWr;
   s_RegWrAddr <= WBWriteRegAdd;
+  oALUOut <= s_ALUout;
   with iInstLd select
     s_IMemAddr <= s_NextInstAddr when '0',
       iInstAddr when others;
@@ -411,7 +412,7 @@ begin
     port MAP( --PC 0x00400000, special register 
 	i_CLK		=> iCLK,
 	i_RST      	=> iRST,
-	i_WE		=> iCLK,
+	i_WE		=> '1',
 	i_D		=> s_JRmuxOut32,
         o_Q            	=> s_NextInstAddr);
 

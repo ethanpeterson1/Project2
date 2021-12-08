@@ -374,6 +374,7 @@ begin
   s_DMemData <= EXMEMRtRegOut;
   s_RegWr <= EXMEMRegWr;
   s_RegWrAddr <= WBWriteRegAdd;
+  oALUOut <= s_ALUout;
   with iInstLd select
     s_IMemAddr <= s_NextInstAddr when '0',
       iInstAddr when others;
@@ -488,7 +489,7 @@ begin
   g_MUX2T1PCSrc: mux2t1_N
     port MAP(
 	i_S		=> s_BranchControl,
-	i_D0      	=> s_IFIDPC,
+	i_D0      	=> s_PCAdderOut,
 	i_D1		=> s_BranchPC,
         o_O            	=> s_BranchPCMuxout);
 
