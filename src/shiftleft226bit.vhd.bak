@@ -16,20 +16,20 @@
 -- 11/25/19 by H3:Changed name to avoid name conflict with Quartus
 --          primitives.
 -------------------------------------------------------------------------
-
-library IEEE;
+library IEEE; 
 use IEEE.std_logic_1164.all;
+use work.busArray.array32;
 
 entity shiftleft226bit is
 
   port(in26        : in std_logic_vector(25 downto 0);  
-       out28shifted         : out std_logic_vector(28 downto 0));  
+       out28shifted         : out std_logic_vector(27 downto 0));  
 
 end shiftleft226bit;
 
 architecture dataflow of shiftleft226bit is
 
 begin
-	out28shifted <= in26 + "00";
+	out28shifted <= in26 & "00";
 
 end dataflow;

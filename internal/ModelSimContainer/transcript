@@ -1,5 +1,5 @@
 # vsim -c -voptargs="+acc" tb -do "../testpy/modelsim_framework.do" 
-# Start time: 13:16:47 on Dec 08,2021
+# Start time: 13:36:13 on Dec 08,2021
 # ** Note: (vsim-3813) Design is being optimized due to module recompilation...
 # //  Questa Sim-64
 # //  Version 2021.2 linux_x86_64 Apr 14 2021
@@ -39,9 +39,9 @@
 # Loading work.mux2t1_n(structural)#1
 # Loading work.mux2t1(structural)#1
 # Loading work.invg(dataflow)#1
-# Loading work.busarray
 # Loading work.shiftleft226bit(dataflow)#1
 # Loading work.mux2t1_5(structural)#1
+# Loading work.busarray
 # Loading work.registerfile(structural)#1
 # Loading work.decoder32bit(dataflow)#1
 # Loading work.dffg_nbit(structural)#1
@@ -74,10 +74,10 @@
 # ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
 #    Time: 300 ns  Iteration: 5  Instance: /tb/MyMips/DMem
 # ** Note: Data structure takes 42638600 bytes of memory
-#          Process time 0.09 seconds
+#          Process time 0.10 seconds
 #          stop
 #    Time: 320 ns  Iteration: 1  Instance: /tb
 # Break in Process P_DUMP_STATE at /home/ethanp1/ethanp1/Project2/src/tb.vhd line 146
 # Stopped at /home/ethanp1/ethanp1/Project2/src/tb.vhd line 146
-# End time: 13:16:49 on Dec 08,2021, Elapsed time: 0:00:02
+# End time: 13:36:14 on Dec 08,2021, Elapsed time: 0:00:01
 # Errors: 0, Warnings: 3

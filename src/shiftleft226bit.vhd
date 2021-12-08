@@ -18,7 +18,7 @@
 -------------------------------------------------------------------------
 library IEEE; 
 use IEEE.std_logic_1164.all;
-use work.busArray.array32;
+
 
 entity shiftleft226bit is
 
