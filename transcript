@@ -12,17 +12,3 @@
 # //  is prohibited from disclosure under the Trade Secrets Act,
 # //  18 U.S.C. Section 1905.
 # //
-add wave -position insertpoint vsim:/tb/MyMips/*
-# doVOpenFlatFile(): INTERNAL ERROR: page load failed for file /home/ethanp1/ethanp1/Project2/internal/QuestaSimContainer/work/shiftleft226bit/dataflow.dbs (120:120 1:1 22449 0 310 1638987585 0x10b:0x101)
-#  Trace back: invalid command name ".main_pane.cs.2.pw"
-#     while executing
-# "$w cget -opaqueresize"
-#     (procedure "::tk::panedwindow::DragSash" line 2)
-#     invoked from within
-# "::tk::panedwindow::DragSash $w $_x $_y $opaque"
-#     (procedure "::tk::panedwindow::2DDragSash" line 10)
-#     invoked from within
-# "::tk::panedwindow::2DDragSash .main_pane.cs.9.pw 443 44 2363 260 0"
-#     (command bound to event)
-#    <2:/usr/local/mentor/questasim/linux_x86_64/tk8.6/bgerror.tcl:106: ::tkerror {invalid command name ".main_pane.cs.2.pw"}
-#    <1:eval:1: ::tk::dialog::error::bgerror {invalid command name ".main_pane.cs.2.pw"}
