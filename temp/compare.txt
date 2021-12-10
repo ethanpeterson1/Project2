@@ -1,22 +1,22 @@
 Oh no...
 
-Cycle: 6
+Cycle: 10
 Incorrect Write to Register File
-MARS instruction number: 2	Instruction: ori $1,$1,0
-MARS: Register Write to Reg: 0x01 Val: 0x10010000
-Student: Register Write to Reg: 0x01 Val: 0x00000000
+MARS instruction number: 10	Instruction: lui $1,17185
+MARS: Register Write to Reg: 0x01 Val: 0x43210000
+Student: Register Write to Reg: 0x02 Val: 0x00001234
 
-Cycle: 7
-Incorrect Write to Register File
-MARS instruction number: 3	Instruction: add $8,$8,$1
-MARS: Register Write to Reg: 0x08 Val: 0x10010000
-Student: Register Write to Reg: 0x08 Val: 0x00000000
+Cycle: 13
+MARS Stopped Execution, Student Improperly Continues
+MARS instruction number: NA	Instruction: NA
+MARS: Execution Ended
+Student: Register Write to Reg: 0xX0 Val: 0xXXXXXXXX
 
-Cycle: 9
-Incorrect Write to Register File
-MARS instruction number: 5	Instruction: ori $1,$1,61453
-MARS: Register Write to Reg: 0x01 Val: 0x0000F00D
-Student: Register Write to Reg: 0x01 Val: 0xFFFFF00D
+Cycle: 14
+MARS Stopped Execution, Student Improperly Continues
+MARS instruction number: NA	Instruction: NA
+MARS: Execution Ended
+Student: Register Write to Reg: 0x05 Val: 0x00000005
 
 You have reached the maximum mismatches (3)
 

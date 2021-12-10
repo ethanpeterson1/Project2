@@ -47,7 +47,7 @@ begin
 		ALUcontrolOut <= "0100";
 	elsif ALUOP = "1011" then --slti
 		ALUcontrolOut <= "0011";
-	elsif ALUOP = "0000" then --sll, srl, sra
+	elsif ALUOP = "0010"  and  functionF(10 downto 6) /= "00000" then --sll, srl, sra
 		if functionF(5 downto 0) = "000000" then --sll
 			ALUcontrolOut <= "1010";
 			shAmt <= functionF(10 downto 6);

@@ -50,14 +50,7 @@ P_CLK: process
   end process;
 P_TB : process
 	begin
-	wait for gCLK_HPER;
-	s_EXMEMRegWrite <= '1'; --forwardA <= "10"
-	s_EXMEMRD <= "01111";
-	s_IDEXRT <= "01111";
-	wait for gCLK_HPER;
-	s_IDEXRS <= "01111"; --forwardB <= "10"
-	wait for gCLK_HPER;
-	
+
 	wait;
 	end process;
 end behavior;

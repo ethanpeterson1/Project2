@@ -319,6 +319,12 @@ end component;
 
 end component;
 
+	component invg is
+	  port(i_A          : in std_logic;
+       o_F          : out std_logic);
+end component;
+
+
   -- TODO: You may add any additional signals or components your implementation 
   --       requires below this comment
 
@@ -374,7 +380,7 @@ begin
   s_DMemData <= EXMEMRtRegOut;
   s_RegWr <= EXMEMRegWr;
   s_RegWrAddr <= WBWriteRegAdd;
-  oALUOut <= s_ALUout;
+  oALUOut <= WBALUout;
   with iInstLd select
     s_IMemAddr <= s_NextInstAddr when '0',
       iInstAddr when others;
@@ -489,7 +495,7 @@ begin
   g_MUX2T1PCSrc: mux2t1_N
     port MAP(
 	i_S		=> s_BranchControl,
-	i_D0      	=> s_IFIDPC,
+	i_D0      	=> s_PCAdderOut,
 	i_D1		=> s_BranchPC,
         o_O            	=> s_BranchPCMuxout);
 

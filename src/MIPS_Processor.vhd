@@ -319,6 +319,12 @@ end component;
 
 end component;
 
+	component invg is
+	  port(i_A          : in std_logic;
+       o_F          : out std_logic);
+end component;
+
+
   -- TODO: You may add any additional signals or components your implementation 
   --       requires below this comment
 
@@ -367,6 +373,7 @@ end component;
 	signal s_BranchControl : std_logic;
 	signal s_comparator :std_logic;
 	signal s_BranchPCMuxout: std_logic_vector(31 downto 0);
+	signal s_test : std_logic;
 begin
 
   -- TODO: This is required to be your final input to your instruction memory. This provides a feasible method to externally load the memory module which means that the synthesis tool must assume it knows nothing about the values stored in the instruction memory. If this is not included, much, if not all of the design is optimized out because the synthesis tool will believe the memory to be all zeros.
@@ -374,7 +381,7 @@ begin
   s_DMemData <= EXMEMRtRegOut;
   s_RegWr <= EXMEMRegWr;
   s_RegWrAddr <= WBWriteRegAdd;
-  oALUOut <= s_ALUout;
+  oALUOut <= WBALUout;
   with iInstLd select
     s_IMemAddr <= s_NextInstAddr when '0',
       iInstAddr when others;
@@ -575,9 +582,13 @@ begin
 		 i_D1 => s_rsOut,
 		 o_O => s_JRmuxOut32
 	);
+   g_invg : invg
+	port map(i_A => s_comparator,
+		 o_F => s_test
+	);
    g_andg2 : andg2
 	port map(i_A => s_branch,
-		 i_B => s_comparator,
+		 i_B => s_test,
 		 o_F => s_BranchControl
 	);
 
