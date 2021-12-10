@@ -330,6 +330,9 @@ end component;
 	     EXMEMRegWrite : in std_logic;
 	     MEMWBRD	: in std_logic_vector(4 downto 0);
 	     MEMWBRegWrite : in std_logic;
+	     IFIDALUOP	: in std_logic_vector(3 downto 0);
+	     IFIDRS	: in std_logic_vector(4 downto 0);
+	     IFIDRT	: in std_logic_vector(4 downto 0);
 	     ForwardA	: out std_logic_vector(1 downto 0);
 	     ForwardB	: out std_logic_vector(1 downto 0);
 	     ForwardC 	: out std_logic;
@@ -401,9 +404,9 @@ end component;
 	signal s_test : std_logic;
 	signal s_IF_Flush : std_logic;
 	signal s_oDHazardStage : std_logic_vector(1 downto 0);
-	signal s_ForwardA, s_ForwardB : std_logic_vector(1 downto 0);
-	signal s_ForwardC, s_ForwardD : std_logic; --Not sure if we need these
+	signal s_ForwardA, s_ForwardB s_ForwardC, s_ForwardD  : std_logic_vector(1 downto 0);
 	signal s_OutFwdMux1, s_OutFwdMux2 : std_logic_vector(31 downto 0);
+	signal s_FwdCMuxOut, s_FwdDMuxOut : std_logic_vector(31 downto 0);
 begin
 
   -- TODO: This is required to be your final input to your instruction memory. This provides a feasible method to externally load the memory module which means that the synthesis tool must assume it knows nothing about the values stored in the instruction memory. If this is not included, much, if not all of the design is optimized out because the synthesis tool will believe the memory to be all zeros.
@@ -546,6 +549,20 @@ begin
 		 i_D0 => s_IFIDInst(25 downto 21),
 		 i_D1 => "11111",
 		 o_O => s_jrMuxOut
+	);
+  g_FwdCMux : mux4t1_N
+	generic map(N => N)
+	port map(i_S => s_ForwardC,
+		 i_D0 => s_rsOut,
+		 i_D1 => 
+		 o_O => FwdCMuxOut,
+	);
+  g_FwdDMux : mux4t1_N
+	generic map(N => N)
+	port map(i_S => s_ForwardD,
+		 i_D0 => s_rtOut,
+		 i_D1 => 
+		 o_O => FwdDMuxOut
 	);
 
   RegFile : RegisterFile 
@@ -748,6 +765,9 @@ begin
 		 EXMEMRegWrite => EXMEMRegWr,
 		 MEMWBRD => WBWriteRegAdd,
 		 MEMRegWrite => WBRegWrite,
+		 IFIDALUOP => s_ALUOP,
+		 IFIDRS => s_jrMuxOut,
+		 IFIDRT => s_IFIDInst(20 downto 16),
 		 ForwardA => s_ForwardA,
 		 ForwardB => s_ForwardB,
 		 ForwardC => s_ForwardC,

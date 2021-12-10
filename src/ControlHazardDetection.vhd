@@ -13,6 +13,9 @@ entity ControlHazardDetection is
 	iIFIDRT			: in std_logic_vector(4 downto 0);
 	iIDEXWriteReg		: in std_logic_vector(4 downto 0);
 	iIDEXRS			: in std_logic_vector(4 downto 0);
+	EXMEMRegWriteEn		: in std_logic
+	EXMEMRdAdd		: in std_logic_vector(4 downto 0);
+	EXMEMMemToReg		: in std_logic;
 	iJumpCtrl		: in std_logic;
 	IF_Flush 		: out std_logic; 
 	oDHazardStage		: out std_logic
@@ -43,7 +46,7 @@ begin
 				
 				oDHazardStage	<= '1';	--LW Operation Hazard, Need value from Mem Stage
 								--Need One stall
-
+			elsif 
 			else		--If there are no data hazards. Need one flush only
 				
 				oDHazardStage	<= "00";	--No stalls needed

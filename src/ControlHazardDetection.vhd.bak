@@ -15,7 +15,7 @@ entity ControlHazardDetection is
 	iIDEXRS			: in std_logic_vector(4 downto 0);
 	iJumpCtrl		: in std_logic;
 	IF_Flush 		: out std_logic; 
-	oDHazardStage		: out std_logic_vector(1 downto 0)
+	oDHazardStage		: out std_logic
       );
 end ControlHazardDetection;
 
@@ -36,12 +36,12 @@ begin
 
 			if iIDEXMemToReg = '0' AND iIDEXRegWr = '1' AND (iIFIDRS = iIDEXWriteReg OR iIFIDRT = iIDEXWriteReg) then	--If there is a ALU operation right before branch instruction. Need one stall
 				
-				oDHazardStage	<= "01";	--ALU Operation Hazard, Need value from Ex Stage
+				oDHazardStage	<= '1';	--ALU Operation Hazard, Need value from Ex Stage
 								--No stalls needed
 
 			elsif iIDEXMemToReg = '1' AND iIDEXRegWr = '1' AND (iIFIDRS = iIDEXRS OR iIFIDRT = iIDEXRS) then	--If there is a LW instruction right before branch instruction. Need two stalls
 				
-				oDHazardStage	<= "10";	--LW Operation Hazard, Need value from Mem Stage
+				oDHazardStage	<= '1';	--LW Operation Hazard, Need value from Mem Stage
 								--Need One stall
 
 			else		--If there are no data hazards. Need one flush only
