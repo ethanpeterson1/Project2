@@ -314,13 +314,13 @@ end component;
 	iBranchNotEqual		: in std_logic;
 	iBranchCtrl 		: in std_logic;
 	iALUOp			: in std_logic_vector(3 downto 0);
-	iRS			: in std_logic_vector(4 downto 0);
-	iRT			: in std_logic_vector(4 downto 0);
+	iIFIDRS			: in std_logic_vector(4 downto 0);
+	iIFIDRT			: in std_logic_vector(4 downto 0);
 	iIDEXWriteReg		: in std_logic_vector(4 downto 0);
 	iIDEXRS			: in std_logic_vector(4 downto 0);
 	iJumpCtrl		: in std_logic;
 	IF_Flush 		: out std_logic; 
-	oStallsNeeded		: out std_logic_vector(1 downto 0)
+	oDHazardStage		: out std_logic_vector(1 downto 0)
 	);
 	component ForwardingUnit is
 	port(
@@ -338,8 +338,16 @@ end component;
 	
 	component invg is
 	  port(i_A          : in std_logic;
-       o_F          : out std_logic);
+       	       o_F          : out std_logic);
 end component;
+	component mux4t1_N is
+	port(i_S	: in std_logic_vector(1 downto 0);
+	     i_D0	: in std_logic_vector(N-1 downto 0);
+	     i_D1	: in std_logic_vector(N-1 downto 0);
+	     i_D2	: in std_logic_vector(N-1 downto 0);
+	     i_D3 	: in std_logic_vector(N-1 downto 0);
+	     o_O	: out std_logic_vector(N-1 downto 0)
+	);
 
 
   -- TODO: You may add any additional signals or components your implementation 
@@ -391,6 +399,11 @@ end component;
 	signal s_comparator :std_logic;
 	signal s_BranchPCMuxout: std_logic_vector(31 downto 0);
 	signal s_test : std_logic;
+	signal s_IF_Flush : std_logic;
+	signal s_oDHazardStage : std_logic_vector(1 downto 0);
+	signal s_ForwardA, s_ForwardB : std_logic_vector(1 downto 0);
+	signal s_ForwardC, s_ForwardD : std_logic; --Not sure if we need these
+	signal s_OutFwdMux1, s_OutFwdMux2 : std_logic_vector(31 downto 0);
 begin
 
   -- TODO: This is required to be your final input to your instruction memory. This provides a feasible method to externally load the memory module which means that the synthesis tool must assume it knows nothing about the values stored in the instruction memory. If this is not included, much, if not all of the design is optimized out because the synthesis tool will believe the memory to be all zeros.
@@ -453,7 +466,7 @@ begin
 		 i_WEn  => '1',
 		 i_Instruction => s_Inst,
 		 i_PC => s_PCAdderOut,
-		 --i_Flush => ,
+		 i_Flush => s_IF_Flush,
 		 o_Instruction => s_IFIDInst,
 		 o_PC => s_IFIDPC
 		 --o_Flush => ,
@@ -614,13 +627,14 @@ begin
 		 iBranchNotEqual => s_comparator,
 		 iBranchCtrl => s_branch,
 		 iALUOp => s_ALUOP,
-		 iRS => s_jrMuxOut,
-		 iRT => s_IFIDInst(20 downto 16),
+		 iIFIDRS => s_jrMuxOut,
+		 iIFIDRT => s_IFIDInst(20 downto 16),
 		 iIDEXWriteReg  => IDEXWriteRegAdd,
 		 iIDEXRS => IDEXrtAdd,
 		 iJumpCtrl => s_jump,
-		 IF_Flush , 
-	);
+		 IF_Flush => s_IF_Flush, 
+		 oDHazardStage => s_oDHazardStage --00 => ID stage, 01 => EX stage, 10 => MEM stall once
+	); 
 
 --EX
 ---------------------------------------------------------------------------
@@ -632,10 +646,27 @@ begin
 		 i_D1 	=> IDEX_SignExtend,
 		 o_O 	=> s_ALUmuxOut
 	);
-
+  g_FwdMux1 : mux4t1_N
+	generic map(N => N)
+	port map(i_S => ForwardA,
+		 i_D0 => IDEX_RS_RegOut,
+		 i_D1 => s_RegWrData,
+		 i_D2 => EXMEMALUOut,
+		 i_D3 => x"00000000",
+		 o_O => s_OutFwdMux1
+	);
+  g_FwdMux2 : mux4t1_N
+	generic map(N => N)
+	port map(i_S => ForwardB,
+		 i_D0 => s_ALUmuxOut,
+		 i_D1 => s_RegWrData,
+		 i_D2 => EXMEMALUOut,
+		 i_D3 => x"00000000",
+		 o_O => s_OutFwdMux2
+	);
   MainALU : ALU
-	port map(i_A => IDEX_RS_RegOut,
-	     i_B => s_ALUmuxOut,
+	port map(i_A => s_OutFwdMux1,
+	     i_B => s_OutFwdMux2,
 	     i_shAmt => IDEXshamt,
 	     i_ALUcode => IDEXALUControlOut,
 	     i_repl => s_replOut, --?
@@ -713,8 +744,14 @@ begin
    g_forwardingUnit : ForwardingUnit
 	port map(IDEXRT => IDEXrsAdd,
 		 IDEXRS => IDEXrtAdd,
-		 EXMEMRD => 
-
+		 EXMEMRD => EXMEMWriteRegAdd,
+		 EXMEMRegWrite => EXMEMRegWr,
+		 MEMWBRD => WBWriteRegAdd,
+		 MEMRegWrite => WBRegWrite,
+		 ForwardA => s_ForwardA,
+		 ForwardB => s_ForwardB,
+		 ForwardC => s_ForwardC,
+		 ForwardD => s_ForwardD
 	);
 		 
 

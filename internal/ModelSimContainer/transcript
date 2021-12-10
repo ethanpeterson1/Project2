@@ -1,6 +1,6 @@
 # vsim -c -voptargs="+acc" tb -do "../testpy/modelsim_framework.do" 
-# Start time: 09:37:22 on Dec 10,2021
-# ** Note: (vsim-3813) Design is being optimized due to module recompilation...
+# Start time: 10:07:06 on Dec 10,2021
+# ** Note: (vsim-8009) Loading existing optimized design _opt
 # //  Questa Sim-64
 # //  Version 2021.2 linux_x86_64 Apr 14 2021
 # //
@@ -81,5 +81,5 @@
 #    Time: 320 ns  Iteration: 1  Instance: /tb
 # Break in Process P_DUMP_STATE at /home/ethanp1/ethanp1/Project2/src/tb.vhd line 146
 # Stopped at /home/ethanp1/ethanp1/Project2/src/tb.vhd line 146
-# End time: 09:37:23 on Dec 10,2021, Elapsed time: 0:00:01
+# End time: 10:07:06 on Dec 10,2021, Elapsed time: 0:00:00
 # Errors: 0, Warnings: 4
