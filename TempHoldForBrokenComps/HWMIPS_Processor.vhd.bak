@@ -583,8 +583,8 @@ begin
 
 
   Comparator : comparator32
-	port map(iCompVal1 => FwdCMuxOut,
-		 iCompVal2 => FwdDMuxOut,
+	port map(iCompVal1 => s_rsOut,
+		 iCompVal2 => s_rtOut,
 		 oNotEqual => s_comparator);
 
   g_RegIDEX : Reg_IDEX

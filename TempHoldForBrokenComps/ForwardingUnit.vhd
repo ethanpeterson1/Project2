@@ -19,7 +19,7 @@ entity ForwardingUnit is
 end ForwardingUnit;
 -- implement lw in mem stage, ALU out ex stage to comparator in ID stage
 architecture behavior of ForwardingUnit is
-begin	-- mux with alu op followed by lw
+begin	-- mux with alu operation followed by lw
 	process(IFIDALUOP,IFIDALUOP,IFIDRS, IFIDRT, IDEXRT,IDEXRS,EXMEMRD,EXMEMRegWrite, MEMWBRD,MEMWBRegWrite,ForwardA,ForwardB,ForwardC, ForwardD)
 	begin
 	ForwardA <= "00";
