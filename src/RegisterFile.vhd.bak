@@ -1,6 +1,12 @@
 library IEEE;
 use IEEE.std_logic_1164.all;
-use work.busArray.array32;
+package busArray is
+
+type array32 is array(31 downto 0) of std_logic_vector(31 downto 0);
+
+end package busArray;
+library IEEE;
+use IEEE.std_logic_1164.all;
 
 entity RegisterFile is
 	generic(N : integer := 32);
@@ -17,7 +23,7 @@ entity RegisterFile is
 end RegisterFile;
 
 architecture structural of RegisterFile is
-	component reg
+	component dffg_NBit
 	generic(N: integer := 32);
   	port (i_CLK        : in std_logic;     -- Clock input
              i_RST        : in std_logic;     -- Reset input
