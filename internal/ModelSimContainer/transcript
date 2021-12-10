@@ -1,6 +1,15 @@
 # vsim -c -voptargs="+acc" tb -do "../testpy/modelsim_framework.do" 
+<<<<<<< HEAD
 # Start time: 11:14:28 on Dec 10,2021
+=======
+<<<<<<< HEAD
+# Start time: 10:07:06 on Dec 10,2021
+# ** Note: (vsim-8009) Loading existing optimized design _opt
+=======
+# Start time: 10:32:27 on Dec 10,2021
+>>>>>>> 5e0d209367dfd94d2b53b1c82da999c6231cdd32
 # ** Note: (vsim-8009) Loading existing optimized design _opt1
+>>>>>>> e980933d6fee749ab9087092d91e9447a8fe6b96
 # //  Questa Sim-64
 # //  Version 2021.2 linux_x86_64 Apr 14 2021
 # //
@@ -76,8 +85,16 @@
 # ** Note: Data structure takes 42376432 bytes of memory
 #          Process time 0.16 seconds
 #          stop
+<<<<<<< HEAD
+#    Time: 320 ns  Iteration: 1  Instance: /tb
+# Break in Process P_DUMP_STATE at /home/ethanp1/ethanp1/Project2/src/tb.vhd line 146
+# Stopped at /home/ethanp1/ethanp1/Project2/src/tb.vhd line 146
+# End time: 10:07:06 on Dec 10,2021, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 4
+=======
 #    Time: 360 ns  Iteration: 1  Instance: /tb
 # Break in Process P_DUMP_STATE at /home/jvandrie/CPRE381/Project2/src/tb.vhd line 146
 # Stopped at /home/jvandrie/CPRE381/Project2/src/tb.vhd line 146
 # End time: 11:14:29 on Dec 10,2021, Elapsed time: 0:00:01
 # Errors: 0, Warnings: 3
+>>>>>>> e980933d6fee749ab9087092d91e9447a8fe6b96

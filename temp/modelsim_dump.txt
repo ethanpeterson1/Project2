@@ -12,6 +12,11 @@ In clock cycle: 9
 Register Write to Reg: 0x00 Val: 0x00000000
 In clock cycle: 11
 Register Write to Reg: 0x00 Val: 0x00000000
+<<<<<<< HEAD
+In clock cycle: 13
+Register Write to Reg: 0x02 Val: 0x00002468
+=======
+>>>>>>> e980933d6fee749ab9087092d91e9447a8fe6b96
 In clock cycle: 14
 Register Write to Reg: 0x01 Val: 0x00000002
 Execution is stopping!

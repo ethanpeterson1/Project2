@@ -23,10 +23,10 @@ begin
 	ForwardB <= "00";
 	ForwardC <= '0';
 	ForwardD <= '0';
-	if EXMEMRegWrite = '1' and EXMEMRD /= "00000" and EXMEMRD = IDEXRT then
+	if EXMEMRegWrite = '1' and EXMEMRD /= "00000" and EXMEMRD = IDEXRS then
 		ForwardA <= "10";
 	end if;
-	if EXMEMRegWrite = '1' and EXMEMRD /= "00000" and EXMEMRD = IDEXRS then
+	if EXMEMRegWrite = '1' and EXMEMRD /= "00000" and EXMEMRD = IDEXRT then
 		ForwardB <= "10";
 	end if;
 	if MEMWBRegWrite = '1' and MEMWBRD /= "00000" and MEMWBRD = IDEXRS and not(EXMEMRegWrite = '1' and EXMEMRD /= "00000" and EXMEMRD /= IDEXRS)then 
