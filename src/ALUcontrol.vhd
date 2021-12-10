@@ -17,7 +17,7 @@ architecture behavior of ALUcontrol is
 begin
 	process(ALUOP,functionF,ImmType,i_CLK)
 	begin
-	if ALUOP = "0010" and ImmType ='0' then --instructions: add, addu, sub, subu, and, nor, xor, or, slt
+	if ALUOP = "0010" and ImmType ='0' AND functionF(10 downto 6) = "00000" then --instructions: add, addu, sub, subu, and, nor, xor, or, slt
 --		if ImmType = '1' then -- addi, addiu, sw
 --			ALUcontrolOut <= "0000";
  		if functionF(5 downto 0) = "100010" or functionF(5 downto 0) = "100011" then --  sub, subu
@@ -28,6 +28,8 @@ begin
 			ALUcontrolOut <= "0010";
 		elsif functionF (5 downto 0) = "100111" then --nor
 			ALUcontrolOut <= "0110";
+		elsif functionF (5 downto 0) = "100110" then --xor
+			ALUcontrolOut <= "0101";
 		elsif functionF (5 downto 0) = "000000" then --or
 			ALUcontrolOut <= "0100";
 		elsif functionF (5 downto 0) = "101010" then --slt
