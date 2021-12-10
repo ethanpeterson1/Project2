@@ -14,7 +14,7 @@ entity ControlHazardDetection is
 	iIDEXRegWrEn		: in std_logic;				--Used to check ALU data hazard
 	iIDEXMemToReg		: in std_logic;				--Used to check ALU data hazard
 	iEXMEMRegWrEn		: in std_logic;				--Used to check LW data hazard
-	iEXMEMRTAdd		: in std_logic_vector(4 downto 0);	--Used to check LW data hazard
+	iEXMEMRT		: in std_logic_vector(4 downto 0);	--Used to check LW data hazard
 	iEXMEMMemToReg		: in std_logic;				--Used to check LW data hazard
 	iJumpCtrl		: in std_logic;
 	IF_Flush 		: out std_logic; 			--Flush if branch is taken
@@ -33,7 +33,7 @@ begin
 
 	if iJumpCtrl = '1' then	--Jump instruction
 		IF_Flush 	<= '1';
-		iStall		<= 0';
+		iStall		<= '0';
 
 	elsif (iBranchCtrl = '1' AND iALUOp = "1100" AND iBranchNotEqual = '0') OR (iBranchCtrl = '1' AND iALUOp = "1101" AND iBranchNotEqual = '1') then --(BEQ == True) OR (BNE == True) 
 
@@ -44,13 +44,13 @@ begin
 				iStall	<= '1';	--ALU Operation Hazard, Need value from EXMEM Register
 								--One Stall Needed
 
-			elsif iIDEXMemToReg = '1' AND iIDEXRegWr = '1' AND (iIFIDRS = iIDEXRT OR iIFIDRT = iIDEXRT) then	--If there is a LW instruction right before branch instruction. Need two stalls
+			elsif iIDEXMemToReg = '1' AND iIDEXRegWrEn = '1' AND (iIFIDRS = iIDEXRT OR iIFIDRT = iIDEXRT) then	--If there is a LW instruction right before branch instruction. Need two stalls
 				
 				iStall	<= '1';	--LW Operation Hazard, Need value from MEMWB Stage
 								--Two Stalls Need. One stall now, another stall next cycle
 								--If this elsif is executed, then the elsif right below should execute aswell. They work together
 
-			elsif iEXMEMMemToReg = '1' AND iEXMEMRegWriteEn = '1' AND (iIFIDRS = iEXMEMRT OR iIFIDRT = iEXMEMRT)
+			elsif iEXMEMMemToReg = '1' AND iEXMEMRegWrEn = '1' AND (iIFIDRS = iEXMEMRT OR iIFIDRT = iEXMEMRT) then 
 	
 				iStall <= '1';	--LW Operation Hazard, Need value from MEMWB Stage	
 								--One stall needed to avoid LW data hazard. Two stalls in total needed

@@ -2,12 +2,11 @@ library IEEE;
 use IEEE.std_logic_1164.all;
 
 
-entity Reg_IDEX_hw is
+entity Reg_IDEX is
 generic(N : integer := 186);
   port(	i_CLKn        	: in std_logic;     -- Clock input
        	i_RSTn        	: in std_logic;     -- Reset input
        	i_WEn         	: in std_logic;     -- Write enable input
-	i_Flush		: in std_logic;	    -- hw
 
 	i_RS_RegOut	: in std_logic_vector(31 downto 0);
 	i_RT_RegOut	: in std_logic_vector(31 downto 0);
@@ -60,9 +59,9 @@ generic(N : integer := 186);
     	o_JalControl    : out std_logic;
 	o_shamt		: out std_logic_vector(4 downto 0);
 	o_LuiInst	: out std_logic);
-end Reg_IDEX_hw;
+end Reg_IDEX;
 
-architecture structural of Reg_IDEX_hw is
+architecture structural of Reg_IDEX is
 component register_186 is
 port(i_CLKn        : in std_logic;     -- Clock input
        i_RSTn        : in std_logic;     -- Reset input
@@ -73,7 +72,6 @@ end component;
 
 signal S_Reg_Inputs: std_logic_vector(185 downto 0);
 signal S_Reg_Outputs: std_logic_vector(185 downto 0);
-signal S_Flush: std_logic;					-- hw
 
 begin
 S_Reg_Inputs <= 
@@ -94,12 +92,10 @@ i_SignExtendOut &
 i_RT_RegOut &
 i_RS_RegOut;
 
-S_Flush <= i_RSTn or i_Flush;					-- hw
-
 
 REG: register_186 port map(
 	i_CLKn => i_CLKn, 
-       	i_RSTn => S_Flush,					-- hw
+       	i_RSTn => i_RSTn,
        	i_WEn  => i_WEn,
        	i_Dn   => S_Reg_Inputs,
        	o_Qn   => S_Reg_Outputs);

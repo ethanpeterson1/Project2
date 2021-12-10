@@ -2,12 +2,12 @@ library IEEE;
 use IEEE.std_logic_1164.all;
 
 
-entity Reg_EXMEM is
+entity Reg_EXMEM_hw is
 generic(N : integer := 138);
   port(	i_CLKn        	: in std_logic;     -- Clock input
        	i_RSTn        	: in std_logic;     -- Reset input
        	i_WEn         	: in std_logic;     -- Write enable input
-
+	i_Flush		: in std_logic;	    -- hw
 
 	i_ALUOut	: in std_logic_vector(31 downto 0);
 	i_Inst          : in std_logic_vector(31 downto 0);
@@ -33,9 +33,9 @@ generic(N : integer := 138);
 	o_UpdatedPC	: out std_logic_vector(31 downto 0));
 	
 
-end Reg_EXMEM;
+end Reg_EXMEM_hw;
 
-architecture structural of Reg_EXMEM is
+architecture structural of Reg_EXMEM_hw is
 component register_138 is
 port(i_CLKn        : in std_logic;     -- Clock input
        i_RSTn        : in std_logic;     -- Reset input
@@ -46,6 +46,8 @@ end component;
 
 signal S_Reg_Inputs: std_logic_vector(137 downto 0);
 signal S_Reg_Outputs: std_logic_vector(137 downto 0);
+signal S_Flush: std_logic;					-- hw
+signal S_Stall: std_logic;					-- hwS
 
 begin
 S_Reg_Inputs <= i_UpdatedPC &
@@ -58,11 +60,15 @@ S_Reg_Inputs <= i_UpdatedPC &
 		i_RtRegOut &
 		i_Inst &
 		i_ALUOut;
+
+
+S_Flush <= i_RSTn or i_Flush;					-- hw
+S_Stall <= not i_WEn;						-- hwS
 		
 REG: register_138 port map(
 	i_CLKn => i_CLKn, 
-       	i_RSTn => i_RSTn,
-       	i_WEn  => i_WEn,
+       	i_RSTn => S_Flush,					-- hw
+       	i_WEn  => S_Stall,					-- hwS
        	i_Dn   => S_Reg_Inputs,
        	o_Qn   => S_Reg_Outputs);
 

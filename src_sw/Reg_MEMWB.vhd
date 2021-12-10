@@ -2,12 +2,12 @@ library IEEE;
 use IEEE.std_logic_1164.all;
 
 
-entity Reg_MEMWB_hw is
+entity Reg_MEMWB is
 generic(N : integer := 137);
   port(	i_CLKn        	: in std_logic;     -- Clock input
        	i_RSTn        	: in std_logic;     -- Reset input
        	i_WEn         	: in std_logic;     -- Write enable input
-	i_Flush		: in std_logic;	    -- hw
+
 
 	i_ALUOut	: in std_logic_vector(31 downto 0);
 	i_DMEM		: in std_logic_vector(31 downto 0);
@@ -29,9 +29,9 @@ generic(N : integer := 137);
 	o_LuiControl	: out std_logic;
 	o_JalControl	: out std_logic);
 
-end Reg_MEMWB_hw;
+end Reg_MEMWB;
 
-architecture structural of Reg_MEMWB_hw is
+architecture structural of Reg_MEMWB is
 component register_137 is
 port(i_CLKn        : in std_logic;     -- Clock input
        i_RSTn        : in std_logic;     -- Reset input
@@ -40,12 +40,8 @@ port(i_CLKn        : in std_logic;     -- Clock input
        o_Qn          : out std_logic_vector(136 downto 0));   -- Data value output
 end component;
 
-
-
 signal S_Reg_Inputs: std_logic_vector(136 downto 0);
 signal S_Reg_Outputs: std_logic_vector(136 downto 0);
-signal S_Flush: std_logic;					-- hw
-signal S_Stall: std_logic;					-- hwS
 
 begin
 S_Reg_Inputs <= i_JalControl &
@@ -57,14 +53,11 @@ S_Reg_Inputs <= i_JalControl &
 		i_UpdatedPC &
 		i_DMEM &
 		i_ALUOut;
-
-S_Flush <= i_RSTn or i_Flush;					-- hw
-S_Stall <= not i_WEn;						-- hwS
 		
 REG: register_137 port map(
 	i_CLKn => i_CLKn, 
-       	i_RSTn => S_Flush,					-- hw
-       	i_WEn  => S_Stall,					-- hwS
+       	i_RSTn => i_RSTn,
+       	i_WEn  => i_WEn,
        	i_Dn   => S_Reg_Inputs,
        	o_Qn   => S_Reg_Outputs);
 
