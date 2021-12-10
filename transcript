@@ -12,3 +12,26 @@
 # //  is prohibited from disclosure under the Trade Secrets Act,
 # //  18 U.S.C. Section 1905.
 # //
+view -new wave
+# .main_pane.wave1.interior.cs.body.pw.wf
+add wave -position insertpoint vsim:/tb/MyMips/*
+# doVOpenFlatFile(): INTERNAL ERROR: page load failed for file /home/ethanp1/ethanp1/Project2/internal/QuestaSimContainer/work/mips_processor/structure.dbs (155:155 1:1 30714 0 14225 1639103993 0x10b:0x101)
+# doVOpenFlatFile(): INTERNAL ERROR: page load failed for file /home/ethanp1/ethanp1/Project2/internal/QuestaSimContainer/work/mips_processor/structure.dbs (155:155 1:1 30714 0 14225 1639103993 0x10b:0x101)
+# doVOpenFlatFile(): INTERNAL ERROR: page load failed for file /home/ethanp1/ethanp1/Project2/internal/QuestaSimContainer/work/mips_processor/structure.dbs (155:155 1:1 30714 0 14225 1639103993 0x10b:0x101)
+# doVOpenFlatFile(): INTERNAL ERROR: page load failed for file /home/ethanp1/ethanp1/Project2/internal/QuestaSimContainer/work/mips_processor/structure.dbs (155:155 1:1 30714 0 14225 1639103993 0x10b:0x101)
+# doVOpenFlatFile(): INTERNAL ERROR: page load failed for file /home/ethanp1/ethanp1/Project2/internal/QuestaSimContainer/work/mips_processor/structure.dbs (155:155 1:1 30714 0 14225 1639103993 0x10b:0x101)
+# doVOpenFlatFile(): INTERNAL ERROR: page load failed for file /home/ethanp1/ethanp1/Project2/internal/QuestaSimContainer/work/mips_processor/structure.dbs (155:155 1:1 30714 0 14225 1639103993 0x10b:0x101)
+# doVOpenFlatFile(): INTERNAL ERROR: page load failed for file /home/ethanp1/ethanp1/Project2/internal/QuestaSimContainer/work/mips_processor/structure.dbs (155:155 1:1 30714 0 14225 1639103993 0x10b:0x101)
+# doVOpenFlatFile(): INTERNAL ERROR: page load failed for file /home/ethanp1/ethanp1/Project2/internal/QuestaSimContainer/work/mips_processor/structure.dbs (155:155 1:1 30714 0 14225 1639103993 0x10b:0x101)
+add wave -position insertpoint vsim1:/tb/MyMips/*
+# doVOpenFlatFile(): INTERNAL ERROR: page load failed for file /home/ethanp1/ethanp1/Project2/internal/QuestaSimContainer/work/mips_processor/structure.dbs (155:155 1:1 30714 0 14225 1639103993 0x10b:0x101)
+add wave -position insertpoint vsim2:/tb/MyMips/*
+# Paste insertion failed: addi: (vish-4014) No objects found matching 'addi'.
+# Paste insertion failed: $0,: (vish-4014) No objects found matching '$0,'.
+# Paste insertion failed: $0,: (vish-4014) No objects found matching '$0,'.
+# Paste insertion failed: 0: (vish-4014) No objects found matching '0'.
+# Paste insertion failed: addi: (vish-4014) No objects found matching 'addi'.
+# Paste insertion failed: $0,: (vish-4014) No objects found matching '$0,'.
+# Paste insertion failed: $0,: (vish-4014) No objects found matching '$0,'.
+# Paste insertion failed: 0: (vish-4014) No objects found matching '0'.
+# doVOpenFlatFile(): INTERNAL ERROR: page load failed for file /home/ethanp1/ethanp1/Project2/internal/QuestaSimContainer/work/mips_processor/structure.dbs (155:155 1:1 30714 0 14225 1639103993 0x10b:0x101)
