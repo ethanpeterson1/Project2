@@ -27,16 +27,18 @@ end component;
 signal S_Reg_Inputs: std_logic_vector(63 downto 0);
 signal S_Reg_Outputs: std_logic_vector(63 downto 0);
 signal S_Flush: std_logic;					-- hw
+signal S_Stall: std_logic;					-- hwS
 
 begin
 
 S_Reg_Inputs <= i_PC & i_Instruction;
 S_Flush <= i_RSTn or i_Flush;					-- hw
+S_Stall <= not i_WEn;						-- hwS
 
 REG: register_64 port map(
 	i_CLK  => i_CLKn, 
-       	i_RSTn => S_Flush,					-- hw
-       	i_WE   => i_WEn,
+       	i_RST => S_Flush,					-- hw
+       	i_WEn  => S_Stall,					-- hwS
        	i_D    => S_Reg_Inputs,
        	o_Q    => S_Reg_Outputs);
 o_Instruction 	<= S_Reg_Outputs(31 downto 0);

@@ -65,7 +65,7 @@ S_Flush <= i_RSTn or i_Flush;					-- hw
 		
 REG: register_138 port map(
 	i_CLKn => i_CLKn, 
-       	i_RSTn => S_Flush,
+       	i_RSTn => S_Flush,					-- hw
        	i_WEn  => i_WEn,
        	i_Dn   => S_Reg_Inputs,
        	o_Qn   => S_Reg_Outputs);

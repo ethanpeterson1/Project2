@@ -45,7 +45,7 @@ end component;
 signal S_Reg_Inputs: std_logic_vector(136 downto 0);
 signal S_Reg_Outputs: std_logic_vector(136 downto 0);
 signal S_Flush: std_logic;					-- hw
-signal S_Stall: std_logic;					-- hwS
+signal S_Stalll: std_logic;					-- hwS
 
 begin
 S_Reg_Inputs <= i_JalControl &
