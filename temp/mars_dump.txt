@@ -8,13 +8,16 @@ Register Write to Reg: 0x03 Val: 0x00000002
 Register Write to Reg: 0x04 Val: 0x00000002
 [inst #5] nop 
 [inst #6] beq $1,$2,4
-[inst #7] beq $1,$3,4
+[inst #7] beq $1,$3,7
 [inst #8] beq $3,$4,-5
-[inst #9] bne $1,$2,7
+[inst #9] bne $1,$2,10
 [inst #10] bne $1,$4,3
-[inst #11] addi $1,$0,1
-Register Write to Reg: 0x01 Val: 0x00000001
-[inst #12] beq $1,$3,-4
+[inst #11] addi $1,$0,2
+Register Write to Reg: 0x01 Val: 0x00000002
+[inst #12] nop 
 [inst #13] nop 
-[inst #14] halt 
+[inst #14] nop 
+[inst #15] beq $1,$3,-7
+[inst #16] beq $1,$3,7
+[inst #17] halt 
 
