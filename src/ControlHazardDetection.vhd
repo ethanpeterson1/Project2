@@ -35,36 +35,41 @@ begin
 		IF_Flush 	<= '1';
 		iStall		<= '0';
 
-	elsif (iBranchCtrl = '1' AND iALUOp = "1100" AND iBranchNotEqual = '0') OR (iBranchCtrl = '1' AND iALUOp = "1101" AND iBranchNotEqual = '1') then --(BEQ == True) OR (BNE == True) 
+	elsif iBranchCtrl = '1' then --Branch Instruction
 
-			IF_Flush 	<= '1';	--Needs to flush with or without data hazards
-
-			if iIDEXMemToReg = '0' AND iIDEXRegWrEn = '1' AND (iIFIDRS = iIDEXRD OR iIFIDRT = iIDEXRD) then	--If there is a ALU operation right before branch instruction. Need one stall
+		if iIDEXMemToReg = '0' AND iIDEXRegWrEn = '1' AND (iIFIDRS = iIDEXRD OR iIFIDRT = iIDEXRD) then	--If there is a ALU operation right before branch instruction. Need one stall
 				
-				iStall	<= '1';	--ALU Operation Hazard, Need value from EXMEM Register
-								--One Stall Needed
+			iStall	<= '1';	--ALU Operation Hazard, Need value from EXMEM Register
+							--One Stall Needed
 
-			elsif iIDEXMemToReg = '1' AND iIDEXRegWrEn = '1' AND (iIFIDRS = iIDEXRT OR iIFIDRT = iIDEXRT) then	--If there is a LW instruction right before branch instruction. Need two stalls
+		elsif iIDEXMemToReg = '1' AND iIDEXRegWrEn = '1' AND (iIFIDRS = iIDEXRT OR iIFIDRT = iIDEXRT) then	--If there is a LW instruction right before branch instruction. Need two stalls
 				
-				iStall	<= '1';	--LW Operation Hazard, Need value from MEMWB Stage
-								--Two Stalls Need. One stall now, another stall next cycle
-								--If this elsif is executed, then the elsif right below should execute aswell. They work together
+			iStall	<= '1';	--LW Operation Hazard, Need value from MEMWB Stage
+							--Two Stalls Need. One stall now, another stall next cycle
+							--If this elsif is executed, then the elsif right below should execute aswell. They work together
 
-			elsif iEXMEMMemToReg = '1' AND iEXMEMRegWrEn = '1' AND (iIFIDRS = iEXMEMRT OR iIFIDRT = iEXMEMRT) then 
+		elsif iEXMEMMemToReg = '1' AND iEXMEMRegWrEn = '1' AND (iIFIDRS = iEXMEMRT OR iIFIDRT = iEXMEMRT) then
 	
-				iStall <= '1';	--LW Operation Hazard, Need value from MEMWB Stage	
-								--One stall needed to avoid LW data hazard. Two stalls in total needed
-								--One stall already executed from prev elsif. Another stall executed here
+			iStall <= '1';	--LW Operation Hazard, Need value from MEMWB Stage	
+							--One stall needed to avoid LW data hazard. Two stalls in total needed
+							--One stall already executed from prev elsif. Another stall executed here
 
-			else		--If there are no data hazards.
+		elsif (iALUOp = "1100" AND iBranchNotEqual = '0') OR (iALUOp = "1101" AND iBranchNotEqual = '1') then	--Check if the branch is true
+
+			iStall 		<= '0'; 
+			IF_Flush 	<= '1';	
+					
+
+		else		--If there are no data hazards.
 				
-				iStall	<= '0';	--No stalls needed
+			iStall		<= '0';	--No stalls needed
+			IF_Flush 	<= '0'; --Branch not taken so no flush needed.
 				
-			end if;
+		end if;
 
 	else	-- If not a branch or jump, no control hazard detection needed
 		IF_FLush 	<= '0';
-		iStall	<= '0';
+		iStall		<= '0';
 	end if;
 	end process;
 	
