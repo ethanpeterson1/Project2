@@ -2,7 +2,7 @@ library IEEE;
 use IEEE.std_logic_1164.all;
 
 
-entity Reg_EXMEM_hw is
+entity Reg_EXMEM is
 generic(N : integer := 138);
   port(	i_CLKn        	: in std_logic;     -- Clock input
        	i_RSTn        	: in std_logic;     -- Reset input
@@ -33,9 +33,9 @@ generic(N : integer := 138);
 	o_UpdatedPC	: out std_logic_vector(31 downto 0));
 	
 
-end Reg_EXMEM_hw;
+end Reg_EXMEM;
 
-architecture structural of Reg_EXMEM_hw is
+architecture structural of Reg_EXMEM is
 component register_138 is
 port(i_CLKn        : in std_logic;     -- Clock input
        i_RSTn        : in std_logic;     -- Reset input

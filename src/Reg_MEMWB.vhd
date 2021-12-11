@@ -2,7 +2,7 @@ library IEEE;
 use IEEE.std_logic_1164.all;
 
 
-entity Reg_MEMWB_hw is
+entity Reg_MEMWB is
 generic(N : integer := 137);
   port(	i_CLKn        	: in std_logic;     -- Clock input
        	i_RSTn        	: in std_logic;     -- Reset input
@@ -29,9 +29,9 @@ generic(N : integer := 137);
 	o_LuiControl	: out std_logic;
 	o_JalControl	: out std_logic);
 
-end Reg_MEMWB_hw;
+end Reg_MEMWB;
 
-architecture structural of Reg_MEMWB_hw is
+architecture structural of Reg_MEMWB is
 component register_137 is
 port(i_CLKn        : in std_logic;     -- Clock input
        i_RSTn        : in std_logic;     -- Reset input

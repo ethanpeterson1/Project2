@@ -1,7 +1,7 @@
 library IEEE;
 use IEEE.std_logic_1164.all;
 
-entity HWMIPS_Processor is
+entity MIPS_Processor is
   generic(N : integer := 32);
   port(iCLK            : in std_logic;
        iRST            : in std_logic;
@@ -10,10 +10,10 @@ entity HWMIPS_Processor is
        iInstExt        : in std_logic_vector(N-1 downto 0);
        oALUOut         : out std_logic_vector(N-1 downto 0)); -- TODO: Hook this up to the output of the ALU. It is important for synthesis that you have this output that can effectively be impacted by all other components so they are not optimized away.
 
-end  HWMIPS_Processor;
+end  MIPS_Processor;
 
 
-architecture structure of HWMIPS_Processor is
+architecture structure of MIPS_Processor is
 
   -- Required data memory signals
   signal s_DMemWr       : std_logic; -- TODO: use this signal as the final active high data memory write enable signal
@@ -325,6 +325,7 @@ end component;
 	IF_Flush 		: out std_logic; 			--Flush if branch is taken
 	iStall			: out std_logic				--Stall is high for ALU and LW data hazards
 	);
+	end component;
 	component ForwardingUnit is
 	port(
 	     IDEXRT	: in std_logic_vector(4 downto 0);
@@ -338,10 +339,10 @@ end component;
 	     IFIDRT	: in std_logic_vector(4 downto 0);
 	     ForwardA	: out std_logic_vector(1 downto 0);
 	     ForwardB	: out std_logic_vector(1 downto 0);
-	     ForwardC 	: out std_logic;
-	     ForwardD	: out std_logic;
+	     ForwardC 	: out std_logic_vector(1 downto 0);
+	     ForwardD	: out std_logic_vector(1 downto 0)
 	);
-	
+	end component;
 	component invg is
 	  port(i_A          : in std_logic;
        	       o_F          : out std_logic);
@@ -354,7 +355,13 @@ end component;
 	     i_D3 	: in std_logic_vector(N-1 downto 0);
 	     o_O	: out std_logic_vector(N-1 downto 0)
 	);
-
+end component;
+	component mux2t1_7 is 
+		port(i_S          : in std_logic;
+       		     i_D0         : in std_logic_vector(6 downto 0);
+       	             i_D1         : in std_logic_vector(6 downto 0);
+                     o_O          : out std_logic_vector(6 downto 0));
+end component;
 
   -- TODO: You may add any additional signals or components your implementation 
   --       requires below this comment
@@ -407,10 +414,11 @@ end component;
 	signal s_test : std_logic;
 	signal s_IF_Flush : std_logic;
 	signal s_oDHazardStage : std_logic_vector(1 downto 0);
-	signal s_ForwardA, s_ForwardB s_ForwardC, s_ForwardD  : std_logic_vector(1 downto 0);
+	signal s_ForwardA, s_ForwardB, s_ForwardC, s_ForwardD  : std_logic_vector(1 downto 0);
 	signal s_OutFwdMux1, s_OutFwdMux2 : std_logic_vector(31 downto 0);
 	signal s_FwdCMuxOut, s_FwdDMuxOut : std_logic_vector(31 downto 0);
 	signal s_Stall : std_logic;
+	signal s_StallMuxIn, s_StallMuxOut : std_logic_vector(6 downto 0);
 begin
 
   -- TODO: This is required to be your final input to your instruction memory. This provides a feasible method to externally load the memory module which means that the synthesis tool must assume it knows nothing about the values stored in the instruction memory. If this is not included, much, if not all of the design is optimized out because the synthesis tool will believe the memory to be all zeros.
@@ -419,6 +427,7 @@ begin
   s_RegWr <= EXMEMRegWr;
   s_RegWrAddr <= WBWriteRegAdd;
   oALUOut <= WBALUout;
+  s_StallMuxIn <= s_ALUsrc & s_regdst & s_memWrite & s_memToReg & s_regWrite & s_jal & IFIDluiInst;
   with iInstLd select
     s_IMemAddr <= s_NextInstAddr when '0',
       iInstAddr when others;
@@ -456,7 +465,7 @@ begin
     port MAP( --PC 0x00400000, special register 
 	i_CLK		=> iCLK,
 	i_RST      	=> iRST,
-	i_WE		=> '1',
+	i_WE		=> not s_Stall,
 	i_D		=> s_JRmuxOut32,
         o_Q            	=> s_NextInstAddr);
 
@@ -555,22 +564,20 @@ begin
 		 o_O => s_jrMuxOut
 	);
   g_FwdCMux : mux4t1_N
-	generic map(N => N)
 	port map(i_S => s_ForwardC,
 		 i_D0 => s_rsOut,
 		 i_D1 => s_RegWrData,
 		 i_D2 => EXMEMALUOut,
 		 i_D3 => x"00000000",
-		 o_O => FwdCMuxOut,
+		 o_O => s_FwdCMuxOut
 	);
   g_FwdDMux : mux4t1_N
-	generic map(N => N)
 	port map(i_S => s_ForwardD,
 		 i_D0 => s_rtOut,
 		 i_D1 => s_RegWrData,
 		 i_D2 => EXMEMALUOut,
 		 i_D3 => x"00000000",
-		 o_O => FwdDMuxOut
+		 o_O => s_FwdDMuxOut
 	);
 
   RegFile : RegisterFile 
@@ -587,8 +594,8 @@ begin
 
 
   Comparator : comparator32
-	port map(iCompVal1 => FwdCMuxOut,
-		 iCompVal2 => FwdDMuxOut,
+	port map(iCompVal1 => s_FwdCMuxOut,
+		 iCompVal2 => s_FwdDMuxOut,
 		 oNotEqual => s_comparator);
 
   g_RegIDEX : Reg_IDEX
@@ -604,14 +611,14 @@ begin
 		 i_rsAdd => s_jrMuxOut,
 		 i_rtAdd => s_IFIDInst(20 downto 16),
 		 i_ALUControlOut => s_ALUcontrolOut,
-		 i_ALUSrc => s_ALUsrc,
-		 i_RegDst => s_regdst,
-		 i_MemWrite => s_memWrite,
-		 i_MemToReg => s_memToReg,
-		 i_RegWrite => s_regWrite,
-		 i_JalControl => s_jal,
+		 i_ALUSrc => s_StallMuxOut(6),
+		 i_RegDst => s_StallMuxOut(5),
+		 i_MemWrite => s_StallMuxOut(4),
+		 i_MemToReg => s_StallMuxOut(3),
+		 i_RegWrite => s_StallMuxOut(2),
+		 i_JalControl => s_StallMuxOut(1),
 		 i_shamt => s_shAmt,	
-		 i_LuiInst => IFIDluiInst,
+		 i_LuiInst => s_StallMuxOut(0),
 		 o_RS_RegOut => IDEX_RS_RegOut,
 		 o_RT_RegOut => IDEX_RT_RegOut,
 		 o_SignExtendOut => IDEX_SignExtend,
@@ -627,7 +634,8 @@ begin
 		 o_RegWrite => IDEXRegWrite,
 		 o_JalControl => IDEXJalControl,
 		 o_shamt => IDEXshamt,
-		 o_LuiInst => IDEXluiInst
+		 o_LuiInst => IDEXluiInst,
+		 i_Flush => '0'
 	);
 
     JrMux : mux2t1_N
@@ -662,8 +670,14 @@ begin
 		 iEXMEMMemToReg => EXMEMMemToReg,
 		 iJumpCtrl => s_jump,
 		 IF_Flush => s_IF_Flush,
-		 iStall => s_Stall,
+		 iStall => s_Stall
 	); 
+  g_StallMux : mux2t1_7
+	port map(i_S => s_Stall,
+		 i_D0 => s_StallMuxIn,
+		 i_D1 => "0000000",
+		 o_O => s_StallMuxOut
+	);
 
 --EX
 ---------------------------------------------------------------------------
@@ -676,8 +690,7 @@ begin
 		 o_O 	=> s_ALUmuxOut
 	);
   g_FwdMux1 : mux4t1_N
-	generic map(N => N)
-	port map(i_S => ForwardA,
+	port map(i_S => s_ForwardA,
 		 i_D0 => IDEX_RS_RegOut,
 		 i_D1 => s_RegWrData,
 		 i_D2 => EXMEMALUOut,
@@ -685,8 +698,7 @@ begin
 		 o_O => s_OutFwdMux1
 	);
   g_FwdMux2 : mux4t1_N
-	generic map(N => N)
-	port map(i_S => ForwardB,
+	port map(i_S => s_ForwardB,
 		 i_D0 => s_ALUmuxOut,
 		 i_D1 => s_RegWrData,
 		 i_D2 => EXMEMALUOut,
@@ -720,7 +732,7 @@ begin
 	generic map(N => 106)
 	port map(i_CLKn => iCLK,
 		 i_RSTn => iRST,
-		 i_WEn => '1',
+		 i_WEn => '0',
 		 i_ALUOut => s_ALUout,
 		 i_Inst => IDEXInst,
 		 i_RtRegOut => IDEX_RT_RegOut,
@@ -740,7 +752,8 @@ begin
 		 o_LuiControl => EXMEMLuiControl,
 		 o_MemWr => s_DMemWr,
 		 o_WriteRegAdd => EXMEMWriteRegAdd,
-		 o_UpdatedPC => EXMEMUpdatedPC
+		 o_UpdatedPC => EXMEMUpdatedPC,
+		 i_Flush => '0'
 	);
 
 --MEM
@@ -750,7 +763,7 @@ begin
 	generic map(N => 137)
 	port map(i_CLKn => iCLK,
 		 i_RSTn => iRST,
-		 i_WEn => '1',
+		 i_WEn => '0',
 		 i_ALUOut => EXMEMALUOut,
 		 i_DMEM => s_DMemOut,
 		 i_UpdatedPC => EXMEMUpdatedPC,
@@ -768,7 +781,8 @@ begin
 		 o_MemToReg => WBMemToReg,
 		 o_RegWrite => WBRegWrite,
 		 o_LuiControl => WBLuiControl,
-		 o_JalControl => WBJalControl
+		 o_JalControl => WBJalControl,
+		 i_Flush => '0'
 	);
    g_forwardingUnit : ForwardingUnit
 	port map(IDEXRT => IDEXrsAdd,
@@ -776,7 +790,7 @@ begin
 		 EXMEMRD => EXMEMWriteRegAdd,
 		 EXMEMRegWrite => EXMEMRegWr,
 		 MEMWBRD => WBWriteRegAdd,
-		 MEMRegWrite => WBRegWrite,
+		 MEMWBRegWrite => WBRegWrite,
 		 IFIDALUOP => s_ALUOP,
 		 IFIDRS => s_jrMuxOut,
 		 IFIDRT => s_IFIDInst(20 downto 16),

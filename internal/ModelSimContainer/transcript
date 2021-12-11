@@ -1,14 +1,6 @@
 # vsim -c -voptargs="+acc" tb -do "../testpy/modelsim_framework.do" 
-# Start time: 13:59:10 on Dec 10,2021
-# ** Error: (vsim-7) Failed to open  file "/home/ethanp1/ethanp1/Project2/internal/ModelSimContainer/work/@_opt/_deps" in read mode.
-# No such file or directory. (errno = ENOENT)
-# ** Warning: (vsim-56) Problem with optimized design dependency file "/home/ethanp1/ethanp1/Project2/internal/ModelSimContainer/work/@_opt/_deps" - file open failed.
-# No such file or directory. (errno = ENOENT)
-# ** Error: (vsim-7) Failed to open  file "/home/ethanp1/ethanp1/Project2/internal/ModelSimContainer/work/@_opt1/_deps" in read mode.
-# No such file or directory. (errno = ENOENT)
-# ** Warning: (vsim-56) Problem with optimized design dependency file "/home/ethanp1/ethanp1/Project2/internal/ModelSimContainer/work/@_opt1/_deps" - file open failed.
-# No such file or directory. (errno = ENOENT)
-# ** Note: (vsim-8009) Loading existing optimized design _opt2
+# Start time: 18:01:23 on Dec 10,2021
+# ** Note: (vsim-8009) Loading existing optimized design _opt
 # //  Questa Sim-64
 # //  Version 2021.2 linux_x86_64 Apr 14 2021
 # //
@@ -49,6 +41,7 @@
 # Loading work.invg(dataflow)#1
 # Loading work.shiftleft226bit(dataflow)#1
 # Loading work.mux2t1_5(structural)#1
+# Loading work.mux4t1_n(behavior)#1
 # Loading work.busarray
 # Loading work.registerfile(structural)#1
 # Loading work.decoder32bit(dataflow)#1
@@ -59,6 +52,8 @@
 # Loading work.or32to1(dataflow)#1
 # Loading work.reg_idex(structural)#1
 # Loading work.register_186(structural)#1
+# Loading work.controlhazarddetection(behavior)#1
+# Loading work.mux2t1_7(structural)#1
 # Loading work.alu(structural)#1
 # Loading work.addsub(structural)#1
 # Loading work.adder_n(structural)#1
@@ -74,16 +69,17 @@
 # Loading work.register_138(structural)#1
 # Loading work.reg_memwb(structural)#1
 # Loading work.register_137(structural)#1
+# Loading work.forwardingunit(behavior)#1
 # do ../testpy/modelsim_framework.do
 # ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
 #    Time: 0 ns  Iteration: 0  Instance: /tb/MyMips/DMem
 # ** Warning: NUMERIC_STD.TO_INTEGER: metavalue detected, returning 0
 #    Time: 0 ns  Iteration: 0  Instance: /tb/MyMips/IMem
-# ** Note: Data structure takes 42638600 bytes of memory
-#          Process time 0.10 seconds
+# ** Note: Data structure takes 44099176 bytes of memory
+#          Process time 0.16 seconds
 #          stop
-#    Time: 360 ns  Iteration: 1  Instance: /tb
+#    Time: 640 ns  Iteration: 1  Instance: /tb
 # Break in Process P_DUMP_STATE at /home/ethanp1/ethanp1/Project2/src/tb.vhd line 146
 # Stopped at /home/ethanp1/ethanp1/Project2/src/tb.vhd line 146
-# End time: 13:59:11 on Dec 10,2021, Elapsed time: 0:00:01
-# Errors: 2, Warnings: 4
+# End time: 18:01:24 on Dec 10,2021, Elapsed time: 0:00:01
+# Errors: 0, Warnings: 2

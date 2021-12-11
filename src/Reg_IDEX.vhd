@@ -2,7 +2,7 @@ library IEEE;
 use IEEE.std_logic_1164.all;
 
 
-entity Reg_IDEX_hw is
+entity Reg_IDEX is
 generic(N : integer := 186);
   port(	i_CLKn        	: in std_logic;     -- Clock input
        	i_RSTn        	: in std_logic;     -- Reset input
@@ -12,28 +12,19 @@ generic(N : integer := 186);
 	i_RS_RegOut	: in std_logic_vector(31 downto 0);
 	i_RT_RegOut	: in std_logic_vector(31 downto 0);
 	i_SignExtendOut	: in std_logic_vector(31 downto 0);
-	--i_JumpAdd	: in std_logic_vector(31 downto 0);
 	i_UpdatedPC	: in std_logic_vector(31 downto 0);
 	i_Instruction	: in std_logic_vector(31 downto 0);
 	i_rsAdd		: in std_logic_vector(4 downto 0);
 	i_rtAdd		: in std_logic_vector(4 downto 0);
-	--i_Write_Reg_Add	: in std_logic_vector(4 downto 0);
-	--i_ALUOP		: in std_logic_vector(3 downto 0);
 	i_ALUControlOut	: in std_logic_vector(3 downto 0);
        	i_ALUSrc	: in std_logic;
 	i_RegDst	: in std_logic;
 	i_MemWrite	: in std_logic;
-	--i_Branch	: in std_logic;
 	i_MemToReg	: in std_logic;
 	i_RegWrite	: in std_logic;
-	--i_ExtendControl	: in std_logic;
-	--i_ImmType	: in std_logic;
-	--i_JumpControl	: in std_logic;
-	--i_JRControl	: in std_logic;
-	--i_BranchSelect 	: in std_logic;
 	i_JalControl	: in std_logic;
-	i_shamt		: in std_logic_vector(4 downto 0);
 	i_LuiInst       : in std_logic;
+	i_shamt		: in std_logic_vector(4 downto 0);
 
 
 	o_RS_RegOut    	: out std_logic_vector(31 downto 0);
@@ -43,26 +34,18 @@ generic(N : integer := 186);
    	o_Instruction   : out std_logic_vector(31 downto 0);
   	o_rsAdd        	: out std_logic_vector(4 downto 0);
    	o_rtAdd        	: out std_logic_vector(4 downto 0);
-	--o_Write_Reg_Add	: out std_logic_vector(4 downto 0);
-   	--o_ALUOP        	: out std_logic_vector(3 downto 0);
    	o_ALUControlOut : out std_logic_vector(3 downto 0);
    	o_ALUSrc    	: out std_logic;
     	o_RegDst    	: out std_logic;
    	o_MemWrite    	: out std_logic;
-    	--o_Branch    	: out std_logic;
     	o_MemToReg    	: out std_logic;
     	o_RegWrite    	: out std_logic;
-    	--o_ExtendControl : out std_logic;
-    	--o_ImmType    	: out std_logic;
-    	--o_JumpControl   : out std_logic;
-    	--o_JRControl    	: out std_logic;
-    	--o_BranchSelect  : out std_logic;
     	o_JalControl    : out std_logic;
 	o_shamt		: out std_logic_vector(4 downto 0);
 	o_LuiInst	: out std_logic);
-end Reg_IDEX_hw;
+end Reg_IDEX;
 
-architecture structural of Reg_IDEX_hw is
+architecture structural of Reg_IDEX is
 component register_186 is
 port(i_CLKn        : in std_logic;     -- Clock input
        i_RSTn        : in std_logic;     -- Reset input

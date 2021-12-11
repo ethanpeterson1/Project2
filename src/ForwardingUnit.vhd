@@ -14,13 +14,13 @@ entity ForwardingUnit is
 	     ForwardA	: out std_logic_vector(1 downto 0);
 	     ForwardB	: out std_logic_vector(1 downto 0);
 	     ForwardC 	: out std_logic_vector(1 downto 0);
-	     ForwardD	: out std_logic_vector(1 downto 0);
+	     ForwardD	: out std_logic_vector(1 downto 0)
 	);
 end ForwardingUnit;
 -- implement lw in mem stage, ALU out ex stage to comparator in ID stage
 architecture behavior of ForwardingUnit is
 begin	-- mux with alu operation followed by lw
-	process(IFIDALUOP,IFIDALUOP,IFIDRS, IFIDRT, IDEXRT,IDEXRS,EXMEMRD,EXMEMRegWrite, MEMWBRD,MEMWBRegWrite,ForwardA,ForwardB,ForwardC, ForwardD)
+	process(IFIDALUOP,IFIDRS, IFIDRT, IDEXRT,IDEXRS,EXMEMRD,EXMEMRegWrite, MEMWBRD,MEMWBRegWrite)
 	begin
 	ForwardA <= "00";
 	ForwardB <= "00";

@@ -1,7 +1,7 @@
 library IEEE;
 use IEEE.std_logic_1164.all;
 
-entity Reg_IFID_hw is
+entity Reg_IFID is
 generic(N : integer := 64);
   port(	i_CLKn        	: in std_logic;     -- Clock input
        	i_RSTn        	: in std_logic;     -- Reset input
@@ -13,9 +13,9 @@ generic(N : integer := 64);
 	o_PC		: out std_logic_vector(31 downto 0)
 	--o_Flush		: out std_logic WILL BE IMPLEMENT FOR HARDWARD SCHEDULED PIPELINING
 	);
-end Reg_IFID_hw;
+end Reg_IFID;
 
-architecture structural of Reg_IFID_hw is
+architecture structural of Reg_IFID is
 component register_64 is
 port(i_CLK           : in std_logic;     -- Clock input
        i_RST         : in std_logic;     -- Reset input
